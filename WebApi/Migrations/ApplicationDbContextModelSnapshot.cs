@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using WebApiProjectEnd.Modes;
+using WebApi.Models;
 
 #nullable disable
 
@@ -22,74 +22,7 @@ namespace WebApi.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("WebApi.Modes.CartAggregate.Cart", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("AccountID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AccountID");
-
-                    b.ToTable("Carts");
-                });
-
-            modelBuilder.Entity("WebApi.Modes.CartAggregate.CartItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Amount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("CartId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ProductId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CartId");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("CartItems");
-                });
-
-            modelBuilder.Entity("WebApi.Modes.ImageProduct", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ProductID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductID");
-
-                    b.ToTable("ImageProducts");
-                });
-
-            modelBuilder.Entity("WebApiProjectEnd.Modes.Account", b =>
+            modelBuilder.Entity("WebApi.Models.Account", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -151,7 +84,7 @@ namespace WebApi.Migrations
                         });
                 });
 
-            modelBuilder.Entity("WebApiProjectEnd.Modes.AccountPassword", b =>
+            modelBuilder.Entity("WebApi.Models.AccountPassword", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -174,7 +107,7 @@ namespace WebApi.Migrations
                     b.ToTable("AccountPasswords");
                 });
 
-            modelBuilder.Entity("WebApiProjectEnd.Modes.Address", b =>
+            modelBuilder.Entity("WebApi.Models.Address", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -186,9 +119,6 @@ namespace WebApi.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("AddressInformationID")
-                        .HasColumnType("int");
-
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
 
@@ -196,18 +126,19 @@ namespace WebApi.Migrations
 
                     b.HasIndex("AccountID");
 
-                    b.HasIndex("AddressInformationID");
-
                     b.ToTable("Addresses");
                 });
 
-            modelBuilder.Entity("WebApiProjectEnd.Modes.AddressInformation", b =>
+            modelBuilder.Entity("WebApi.Models.AddressInformation", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AddressId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -242,20 +173,18 @@ namespace WebApi.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AddressId");
+
                     b.ToTable("AddressInformations");
                 });
 
-            modelBuilder.Entity("WebApiProjectEnd.Modes.CategoryProduct", b =>
+            modelBuilder.Entity("WebApi.Models.CategoryProduct", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AccountID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -269,18 +198,21 @@ namespace WebApi.Migrations
                         new
                         {
                             Id = 2,
-                            AccountID = "account-01",
                             Name = "category-01"
                         },
                         new
                         {
                             Id = 3,
-                            AccountID = "account-02",
                             Name = "category-02"
+                        },
+                        new
+                        {
+                            Id = 999,
+                            Name = "rare"
                         });
                 });
 
-            modelBuilder.Entity("WebApiProjectEnd.Modes.Delivery", b =>
+            modelBuilder.Entity("WebApi.Models.Delivery", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -311,7 +243,7 @@ namespace WebApi.Migrations
                     b.ToTable("Deliverys");
                 });
 
-            modelBuilder.Entity("WebApiProjectEnd.Modes.DetailProduct", b =>
+            modelBuilder.Entity("WebApi.Models.DetailProduct", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -354,7 +286,7 @@ namespace WebApi.Migrations
                     b.ToTable("DetailProducts");
                 });
 
-            modelBuilder.Entity("WebApiProjectEnd.Modes.EvidenceMoneyTransfer", b =>
+            modelBuilder.Entity("WebApi.Models.EvidenceMoneyTransfer", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -380,7 +312,27 @@ namespace WebApi.Migrations
                     b.ToTable("EvidenceMoneyTransfers");
                 });
 
-            modelBuilder.Entity("WebApiProjectEnd.Modes.ImageReview", b =>
+            modelBuilder.Entity("WebApi.Models.ImageProduct", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProductID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductID");
+
+                    b.ToTable("ImageProducts");
+                });
+
+            modelBuilder.Entity("WebApi.Models.ImageReview", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -402,68 +354,14 @@ namespace WebApi.Migrations
                     b.ToTable("ImageReviews");
                 });
 
-            modelBuilder.Entity("WebApiProjectEnd.Modes.ListOrder", b =>
+            modelBuilder.Entity("WebApi.Models.Product", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("Amount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("OrderID")
+                    b.Property<string>("AccountID")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ProductID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("TotalPrice")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrderID");
-
-                    b.HasIndex("ProductID");
-
-                    b.ToTable("ListOrders");
-                });
-
-            modelBuilder.Entity("WebApiProjectEnd.Modes.Order", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("AddressID")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("CustomerStatus")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("PaymentStatus")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("PriceTotal")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("SellerStatus")
-                        .HasColumnType("bit");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AddressID");
-
-                    b.ToTable("Orders");
-                });
-
-            modelBuilder.Entity("WebApiProjectEnd.Modes.Product", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CategoryProductID")
                         .HasColumnType("int");
@@ -512,9 +410,10 @@ namespace WebApi.Migrations
                         new
                         {
                             Id = "product-01",
+                            AccountID = "account-01",
                             CategoryProductID = 2,
                             Color = "red",
-                            Created = new DateTime(2023, 1, 7, 21, 15, 45, 633, DateTimeKind.Local).AddTicks(2289),
+                            Created = new DateTime(2023, 1, 23, 16, 43, 14, 804, DateTimeKind.Local).AddTicks(5509),
                             Description = "",
                             ImageUrl = "df339981-6e81-4b28-bbb9-bdcb194a05a3.jpg",
                             Name = "Product01",
@@ -526,9 +425,10 @@ namespace WebApi.Migrations
                         new
                         {
                             Id = "product-02",
+                            AccountID = "account-01",
                             CategoryProductID = 2,
                             Color = "green",
-                            Created = new DateTime(2023, 1, 7, 21, 15, 45, 633, DateTimeKind.Local).AddTicks(2293),
+                            Created = new DateTime(2023, 1, 23, 16, 43, 14, 804, DateTimeKind.Local).AddTicks(5513),
                             Description = "",
                             ImageUrl = "d6667cbd-f010-43b8-95e0-bf3d8ff218bb.jpg",
                             Name = "Product02",
@@ -540,9 +440,10 @@ namespace WebApi.Migrations
                         new
                         {
                             Id = "product-03",
+                            AccountID = "account-01",
                             CategoryProductID = 2,
                             Color = "blue",
-                            Created = new DateTime(2023, 1, 7, 21, 15, 45, 633, DateTimeKind.Local).AddTicks(2295),
+                            Created = new DateTime(2023, 1, 23, 16, 43, 14, 804, DateTimeKind.Local).AddTicks(5515),
                             Description = "",
                             ImageUrl = "d3c013ec-f736-4750-86a5-53b0c6136a9c.jpg",
                             Name = "Product03",
@@ -554,9 +455,10 @@ namespace WebApi.Migrations
                         new
                         {
                             Id = "product-04",
+                            AccountID = "account-01",
                             CategoryProductID = 2,
                             Color = "black",
-                            Created = new DateTime(2023, 1, 7, 21, 15, 45, 633, DateTimeKind.Local).AddTicks(2297),
+                            Created = new DateTime(2023, 1, 23, 16, 43, 14, 804, DateTimeKind.Local).AddTicks(5518),
                             Description = "",
                             ImageUrl = "be242077-737c-48ae-935d-f0ba03ec7d25.jpg",
                             Name = "Product04",
@@ -567,7 +469,7 @@ namespace WebApi.Migrations
                         });
                 });
 
-            modelBuilder.Entity("WebApiProjectEnd.Modes.Review", b =>
+            modelBuilder.Entity("WebApi.Models.Review", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -585,9 +487,8 @@ namespace WebApi.Migrations
                     b.Property<string>("Information")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ListOrderID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("OrderItemID")
+                        .HasColumnType("int");
 
                     b.Property<string>("VdoUrl")
                         .HasColumnType("nvarchar(max)");
@@ -597,12 +498,12 @@ namespace WebApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ListOrderID");
+                    b.HasIndex("OrderItemID");
 
                     b.ToTable("Reviews");
                 });
 
-            modelBuilder.Entity("WebApiProjectEnd.Modes.Role", b =>
+            modelBuilder.Entity("WebApi.Models.Role", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -636,7 +537,7 @@ namespace WebApi.Migrations
                         });
                 });
 
-            modelBuilder.Entity("WebApiProjectEnd.Modes.StatusDelivery", b =>
+            modelBuilder.Entity("WebApi.Models.StatusDelivery", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -653,7 +554,7 @@ namespace WebApi.Migrations
                     b.ToTable("StatusDeliverys");
                 });
 
-            modelBuilder.Entity("WebApiProjectEnd.Modes.WeightUnit", b =>
+            modelBuilder.Entity("WebApi.Models.WeightUnit", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -684,7 +585,247 @@ namespace WebApi.Migrations
 
             modelBuilder.Entity("WebApi.Modes.CartAggregate.Cart", b =>
                 {
-                    b.HasOne("WebApiProjectEnd.Modes.Account", "Account")
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("AccountID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountID");
+
+                    b.ToTable("Carts");
+                });
+
+            modelBuilder.Entity("WebApi.Modes.CartAggregate.CartItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Amount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CartId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProductId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CartId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("CartItems");
+                });
+
+            modelBuilder.Entity("WebApi.Modes.OrderAggregate.Order", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AddressID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("CustomerStatus")
+                        .HasColumnType("bit");
+
+                    b.Property<long>("DeliveryFee")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("OrderCancel")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("OrderStatus")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("SellerStatus")
+                        .HasColumnType("bit");
+
+                    b.Property<long>("Subtotal")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AddressID");
+
+                    b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("WebApi.Modes.OrderAggregate.OrderItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Amount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OrderId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Price")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrderItem");
+                });
+
+            modelBuilder.Entity("WebApi.Models.Account", b =>
+                {
+                    b.HasOne("WebApi.Models.Role", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("WebApi.Models.AccountPassword", b =>
+                {
+                    b.HasOne("WebApi.Models.Account", "Account")
+                        .WithMany()
+                        .HasForeignKey("AccountID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Account");
+                });
+
+            modelBuilder.Entity("WebApi.Models.Address", b =>
+                {
+                    b.HasOne("WebApi.Models.Account", "Account")
+                        .WithMany()
+                        .HasForeignKey("AccountID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Account");
+                });
+
+            modelBuilder.Entity("WebApi.Models.AddressInformation", b =>
+                {
+                    b.HasOne("WebApi.Models.Address", null)
+                        .WithMany("AddressInformations")
+                        .HasForeignKey("AddressId");
+                });
+
+            modelBuilder.Entity("WebApi.Models.Delivery", b =>
+                {
+                    b.HasOne("WebApi.Modes.OrderAggregate.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebApi.Models.StatusDelivery", "StatusDelivery")
+                        .WithMany()
+                        .HasForeignKey("StatusDeliveryID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("StatusDelivery");
+                });
+
+            modelBuilder.Entity("WebApi.Models.DetailProduct", b =>
+                {
+                    b.HasOne("WebApi.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("WebApi.Models.EvidenceMoneyTransfer", b =>
+                {
+                    b.HasOne("WebApi.Modes.OrderAggregate.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("WebApi.Models.ImageProduct", b =>
+                {
+                    b.HasOne("WebApi.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("WebApi.Models.ImageReview", b =>
+                {
+                    b.HasOne("WebApi.Models.Review", "Review")
+                        .WithMany()
+                        .HasForeignKey("ReviewID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Review");
+                });
+
+            modelBuilder.Entity("WebApi.Models.Product", b =>
+                {
+                    b.HasOne("WebApi.Models.CategoryProduct", "CategoryProduct")
+                        .WithMany()
+                        .HasForeignKey("CategoryProductID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebApi.Models.WeightUnit", "WeightUnit")
+                        .WithMany()
+                        .HasForeignKey("WeightUnitID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CategoryProduct");
+
+                    b.Navigation("WeightUnit");
+                });
+
+            modelBuilder.Entity("WebApi.Models.Review", b =>
+                {
+                    b.HasOne("WebApi.Modes.OrderAggregate.OrderItem", "OrderItem")
+                        .WithMany()
+                        .HasForeignKey("OrderItemID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("OrderItem");
+                });
+
+            modelBuilder.Entity("WebApi.Modes.CartAggregate.Cart", b =>
+                {
+                    b.HasOne("WebApi.Models.Account", "Account")
                         .WithMany()
                         .HasForeignKey("AccountID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -701,7 +842,7 @@ namespace WebApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebApiProjectEnd.Modes.Product", "Product")
+                    b.HasOne("WebApi.Models.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -712,132 +853,9 @@ namespace WebApi.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("WebApi.Modes.ImageProduct", b =>
+            modelBuilder.Entity("WebApi.Modes.OrderAggregate.Order", b =>
                 {
-                    b.HasOne("WebApiProjectEnd.Modes.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("WebApiProjectEnd.Modes.Account", b =>
-                {
-                    b.HasOne("WebApiProjectEnd.Modes.Role", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Role");
-                });
-
-            modelBuilder.Entity("WebApiProjectEnd.Modes.AccountPassword", b =>
-                {
-                    b.HasOne("WebApiProjectEnd.Modes.Account", "Account")
-                        .WithMany()
-                        .HasForeignKey("AccountID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Account");
-                });
-
-            modelBuilder.Entity("WebApiProjectEnd.Modes.Address", b =>
-                {
-                    b.HasOne("WebApiProjectEnd.Modes.Account", "Account")
-                        .WithMany()
-                        .HasForeignKey("AccountID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WebApiProjectEnd.Modes.AddressInformation", "AddressInformation")
-                        .WithMany()
-                        .HasForeignKey("AddressInformationID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Account");
-
-                    b.Navigation("AddressInformation");
-                });
-
-            modelBuilder.Entity("WebApiProjectEnd.Modes.Delivery", b =>
-                {
-                    b.HasOne("WebApiProjectEnd.Modes.Order", "Order")
-                        .WithMany()
-                        .HasForeignKey("OrderID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WebApiProjectEnd.Modes.StatusDelivery", "StatusDelivery")
-                        .WithMany()
-                        .HasForeignKey("StatusDeliveryID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Order");
-
-                    b.Navigation("StatusDelivery");
-                });
-
-            modelBuilder.Entity("WebApiProjectEnd.Modes.DetailProduct", b =>
-                {
-                    b.HasOne("WebApiProjectEnd.Modes.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("WebApiProjectEnd.Modes.EvidenceMoneyTransfer", b =>
-                {
-                    b.HasOne("WebApiProjectEnd.Modes.Order", "Order")
-                        .WithMany()
-                        .HasForeignKey("OrderID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Order");
-                });
-
-            modelBuilder.Entity("WebApiProjectEnd.Modes.ImageReview", b =>
-                {
-                    b.HasOne("WebApiProjectEnd.Modes.Review", "Review")
-                        .WithMany()
-                        .HasForeignKey("ReviewID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Review");
-                });
-
-            modelBuilder.Entity("WebApiProjectEnd.Modes.ListOrder", b =>
-                {
-                    b.HasOne("WebApiProjectEnd.Modes.Order", "Order")
-                        .WithMany()
-                        .HasForeignKey("OrderID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WebApiProjectEnd.Modes.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Order");
-
-                    b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("WebApiProjectEnd.Modes.Order", b =>
-                {
-                    b.HasOne("WebApiProjectEnd.Modes.Address", "Address")
+                    b.HasOne("WebApi.Models.Address", "Address")
                         .WithMany()
                         .HasForeignKey("AddressID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -846,39 +864,54 @@ namespace WebApi.Migrations
                     b.Navigation("Address");
                 });
 
-            modelBuilder.Entity("WebApiProjectEnd.Modes.Product", b =>
+            modelBuilder.Entity("WebApi.Modes.OrderAggregate.OrderItem", b =>
                 {
-                    b.HasOne("WebApiProjectEnd.Modes.CategoryProduct", "CategoryProduct")
-                        .WithMany()
-                        .HasForeignKey("CategoryProductID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("WebApi.Modes.OrderAggregate.Order", null)
+                        .WithMany("OrderItems")
+                        .HasForeignKey("OrderId");
+
+                    b.OwnsOne("WebApi.Modes.OrderAggregate.ProductItemOrdered", "ItemOrdered", b1 =>
+                        {
+                            b1.Property<int>("OrderItemId")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("ImageUrl")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Name")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("ProductID")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("OrderItemId");
+
+                            b1.ToTable("OrderItem");
+
+                            b1.WithOwner()
+                                .HasForeignKey("OrderItemId");
+                        });
+
+                    b.Navigation("ItemOrdered")
                         .IsRequired();
-
-                    b.HasOne("WebApiProjectEnd.Modes.WeightUnit", "WeightUnit")
-                        .WithMany()
-                        .HasForeignKey("WeightUnitID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CategoryProduct");
-
-                    b.Navigation("WeightUnit");
                 });
 
-            modelBuilder.Entity("WebApiProjectEnd.Modes.Review", b =>
+            modelBuilder.Entity("WebApi.Models.Address", b =>
                 {
-                    b.HasOne("WebApiProjectEnd.Modes.ListOrder", "ListOrder")
-                        .WithMany()
-                        .HasForeignKey("ListOrderID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ListOrder");
+                    b.Navigation("AddressInformations");
                 });
 
             modelBuilder.Entity("WebApi.Modes.CartAggregate.Cart", b =>
                 {
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("WebApi.Modes.OrderAggregate.Order", b =>
+                {
+                    b.Navigation("OrderItems");
                 });
 #pragma warning restore 612, 618
         }

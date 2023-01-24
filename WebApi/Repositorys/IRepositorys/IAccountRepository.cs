@@ -1,4 +1,5 @@
-﻿using WebApiProjectEnd.Modes;
+﻿using WebApi.Models;
+using WebApiProjectEnd.Modes;
 using WebApiProjectEnd.Modes.DTOS.Accounts;
 
 namespace WebApiProjectEnd.Repositorys.IRepositorys

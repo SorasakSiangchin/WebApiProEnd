@@ -1,4 +1,5 @@
-﻿using WebApi.Modes.CartAggregate;
+﻿using WebApi.Models;
+using WebApi.Modes.CartAggregate;
 using WebApi.Modes.DTOS.Cart;
 using WebApiProjectEnd.Modes;
 

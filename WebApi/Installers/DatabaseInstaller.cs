@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WebApiProjectEnd.Modes;
+using WebApi.Models;
 
 namespace WebApiProjectEnd.Installers
 {

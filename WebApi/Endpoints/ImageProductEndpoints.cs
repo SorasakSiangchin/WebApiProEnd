@@ -1,13 +1,11 @@
-﻿using Microsoft.Win32;
-using System.Security.Principal;
-using WebApiProjectEnd.Modes.DTOS.Accounts;
-using WebApiProjectEnd.Modes;
+﻿
 using WebApi.Repositorys.IRepositorys;
 using System.Net;
 using WebApi.Modes.DTOS.ImageProduct;
 using AutoMapper;
 using WebApi.Modes;
 using Microsoft.AspNetCore.Mvc;
+using WebApi.Models;
 
 namespace WebApi.Endpoints
 {

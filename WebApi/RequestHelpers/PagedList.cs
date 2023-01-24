@@ -13,7 +13,7 @@ namespace WebApi.RequestHelpers
                 TotalCount = count,
                 PageSize = pageSize,
                 CurrentPage = pageNumber,
-                TotalPages = (int)Math.Ceiling(count / (double)pageSize)
+                TotalPages = (int)Math.Ceiling(count / (double)pageSize) //จำนวนหน้าทั้งหมด
             };
             AddRange(items); // List<T>.AddRange(items)
         }

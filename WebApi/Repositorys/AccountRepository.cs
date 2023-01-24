@@ -11,6 +11,7 @@ using WebApiProjectEnd.Modes.DTOS.Accounts;
 using WebApiProjectEnd.Repositorys.IRepositorys;
 using WebApi.Repositorys.IRepositorys;
 using WebApi.Modes;
+using WebApi.Models;
 
 namespace WebApiProjectEnd.Repositorys
 {
@@ -39,10 +40,10 @@ namespace WebApiProjectEnd.Repositorys
 
         public async Task<Account> GetAsync(string id, bool tracked = true)
         {
-            IQueryable<Account> query = _db.Accounts;
+            IQueryable<Account> query = _db.Accounts.Include(e => e.Role);
             if (!tracked)
             {
-                query = query.Include(e => e.Role).AsNoTracking();
+                query = query.AsNoTracking();
             }
             return await query.FirstOrDefaultAsync(e => e.Id.Equals(id));
         }

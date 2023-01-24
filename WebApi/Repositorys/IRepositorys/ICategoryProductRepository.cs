@@ -1,4 +1,4 @@
-﻿using WebApiProjectEnd.Modes;
+﻿using WebApi.Models;
 
 namespace WebApi.Repositorys.IRepositorys
 {

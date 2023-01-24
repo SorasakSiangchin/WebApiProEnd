@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using WebApi.Models;
 using WebApi.Repositorys.IRepositorys;
 using WebApiProjectEnd.Modes;
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using System.Net;
+using WebApi.Models;
 using WebApi.Modes;
 using WebApi.Repositorys.IRepositorys;
 using WebApiProjectEnd.Modes;

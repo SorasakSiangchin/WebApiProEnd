@@ -1,4 +1,5 @@
-﻿using WebApiProjectEnd.Modes;
+﻿using WebApi.Models;
+using WebApiProjectEnd.Modes;
 
 namespace WebApi.Extenstions
 {
@@ -20,6 +21,16 @@ namespace WebApi.Extenstions
            if(RangeStart == 0 && RangeEnd == 0) return query;
             query = query.Where(p => p.Price >= RangeStart && p.Price <= RangeEnd);
             return query;
+        }
+
+        public static IQueryable<Product> Search(this IQueryable<Product> query, string searchTerm)
+        {
+            if (string.IsNullOrEmpty(searchTerm)) return query;
+            // Trim เป็นการตัดช่องว่างทิ้ง
+            // ToLower เป็นตัวเล็ก
+            var lowerCaseSearchTerm = searchTerm.Trim().ToLower();
+
+            return query.Where(p => p.Name.ToLower().Contains(lowerCaseSearchTerm));
         }
     }
 }

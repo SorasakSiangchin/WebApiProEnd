@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.FileProviders;
 using WebApi.Endpoints;
 using WebApi.Installers;
+using WebApi.Middlewares;
+using WebApi.Models;
 using WebApiProjectEnd.Endpoints;
 using WebApiProjectEnd.Installers;
-using WebApiProjectEnd.Modes;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.MyInstallerExtensions(builder);
@@ -34,9 +34,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
+
+
 app.UseDefaultFiles(); // อนุญาตให้เรียกไฟล์ต่างๆ ใน wwwroot
 
 app.UseStaticFiles(); // อนุญาตให้เข้าถึงไฟล์ค่าคงที่ได้ 
+
+#region ส่ง error ไปให้ Axios ตอนทำ Interceptor
+app.UseMiddleware<ExceptionMiddleware>();
+#endregion
 
 app.UseRouting();
 
@@ -52,7 +59,8 @@ app.ConfigureProductEndpoints();
 app.ConfigureImageProductEndpoints();
 app.ConfigureCategoryProductEndpoints();
 app.ConfigureCartEndpoints();
-
+app.ConfigureAddressEndpoints();
+app.ConfigureOrderEndpoints();
 //app.UseEndpoints(endpoints =>
 //{
 //    endpoints.MapControllers();
