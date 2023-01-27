@@ -1,15 +1,19 @@
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 using WebApi.Endpoints;
 using WebApi.Installers;
 using WebApi.Middlewares;
 using WebApi.Models;
 using WebApiProjectEnd.Endpoints;
 using WebApiProjectEnd.Installers;
-
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.MyInstallerExtensions(builder);
-
-
+builder.Services.AddControllers(option =>
+{
+    //option.ReturnHttpNotAcceptable = true;
+}).AddNewtonsoftJson().AddXmlDataContractSerializerFormatters();
+//builder.Services.AddControllers().AddNewtonsoftJson();
 
 var app = builder.Build();
 #region  //สร้ำงข้อมูลจำลอง Fake data 

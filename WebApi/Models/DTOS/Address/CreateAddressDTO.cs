@@ -2,7 +2,7 @@
 {
     public class CreateAddressDTO
     {
-        public List<AddressInformation> AddressInformations { get; set; }
+        public AddressInformation AddressInformations { get; set; }
         public string AccountID { get; set; }
     }
 }

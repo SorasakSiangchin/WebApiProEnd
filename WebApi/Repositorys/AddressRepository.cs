@@ -26,17 +26,18 @@ namespace WebApi.Repositorys
         {
             return await _db.Addresses
                 .Include(x => x.Account)
-                .ProjectAddressToAddressDto()
+                 .ProjectAddressToAddressDto()
                 .Where(x => x.AccountID == accountId)
+                .AsQueryable()
                 .ToListAsync();
         }
 
-        public async Task<AddressDTO> GetAsync(int id, string accountId)
+        public async Task<AddressDTO> GetAsync(int id)
         {
             return await _db.Addresses
                 .Include(x => x.Account)
                 .ProjectAddressToAddressDto()
-                .Where(x => x.AccountID == accountId && x.Id == id)
+                .Where(e => e.Id == id)
                 .FirstOrDefaultAsync();
         }
 

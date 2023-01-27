@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApi.Models;
 
@@ -11,9 +12,11 @@ using WebApi.Models;
 namespace WebApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230125150507_ChangeAddress2")]
+    partial class ChangeAddress2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -143,10 +146,13 @@ namespace WebApi.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("District")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Information")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -470,7 +476,7 @@ namespace WebApi.Migrations
                             AccountID = "account-01",
                             CategoryProductID = 2,
                             Color = "red",
-                            Created = new DateTime(2023, 1, 25, 22, 18, 39, 540, DateTimeKind.Local).AddTicks(9331),
+                            Created = new DateTime(2023, 1, 25, 22, 5, 7, 52, DateTimeKind.Local).AddTicks(629),
                             Description = "",
                             ImageUrl = "df339981-6e81-4b28-bbb9-bdcb194a05a3.jpg",
                             Name = "Product01",
@@ -485,7 +491,7 @@ namespace WebApi.Migrations
                             AccountID = "account-01",
                             CategoryProductID = 2,
                             Color = "green",
-                            Created = new DateTime(2023, 1, 25, 22, 18, 39, 540, DateTimeKind.Local).AddTicks(9338),
+                            Created = new DateTime(2023, 1, 25, 22, 5, 7, 52, DateTimeKind.Local).AddTicks(638),
                             Description = "",
                             ImageUrl = "d6667cbd-f010-43b8-95e0-bf3d8ff218bb.jpg",
                             Name = "Product02",
@@ -500,7 +506,7 @@ namespace WebApi.Migrations
                             AccountID = "account-01",
                             CategoryProductID = 2,
                             Color = "blue",
-                            Created = new DateTime(2023, 1, 25, 22, 18, 39, 540, DateTimeKind.Local).AddTicks(9342),
+                            Created = new DateTime(2023, 1, 25, 22, 5, 7, 52, DateTimeKind.Local).AddTicks(642),
                             Description = "",
                             ImageUrl = "d3c013ec-f736-4750-86a5-53b0c6136a9c.jpg",
                             Name = "Product03",
@@ -515,7 +521,7 @@ namespace WebApi.Migrations
                             AccountID = "account-01",
                             CategoryProductID = 2,
                             Color = "black",
-                            Created = new DateTime(2023, 1, 25, 22, 18, 39, 540, DateTimeKind.Local).AddTicks(9345),
+                            Created = new DateTime(2023, 1, 25, 22, 5, 7, 52, DateTimeKind.Local).AddTicks(646),
                             Description = "",
                             ImageUrl = "be242077-737c-48ae-935d-f0ba03ec7d25.jpg",
                             Name = "Product04",
