@@ -1,6 +1,7 @@
 ﻿using Azure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using System.Net;
 using WebApi.Extenstions;
 using WebApi.Models;
@@ -46,7 +47,7 @@ namespace WebApi.Repositorys
             return response ;
         }
 
-        public async Task<CartDTO> GetCartAsync(string accountId)
+        public async Task<CartDTO> GetCartByAccountIdAsync(string accountId)
         {
             var cart = await RetrieveCart(accountId);
             if (cart == null) return null;
@@ -93,5 +94,24 @@ namespace WebApi.Repositorys
                    .SingleOrDefaultAsync(x => x.AccountID == accountId);
             return cart;
         }
+
+        public async Task<Cart> GetCartAsync(string id)
+        {
+            var cart = await _db.Carts
+                .Include(i => i.Items)
+                .ThenInclude(p => p.Product)
+                .ThenInclude(p => p.CategoryProduct)
+                .SingleOrDefaultAsync(x => x.Id == id);
+            if (cart == null) return null;
+            return cart;
+        }
+
+        //public async Task<CartItem> GetCartItemAsync(int cartItenId)
+        //{
+        //    var cartItem = await _db.Carts.
+             
+        //    if (cartItem == null) return null;
+        //    return cartItem;
+        //}
     }
 }

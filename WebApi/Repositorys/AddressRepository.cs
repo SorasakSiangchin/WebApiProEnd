@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 using WebApi.Extenstions;
 using WebApi.Models;
 using WebApi.Modes.DTOS.Address;
@@ -16,41 +17,51 @@ namespace WebApi.Repositorys
             _db = db;
         }
 
-        public async Task CreactAsync(Address entity)
+        public async Task CreactAsync(Address address)
         {
-            await _db.AddAsync(entity);
+            await _db.AddAsync(address);
+        }
+
+        public async Task<List<Address>> GetAllAsync(string accountId, bool tracked = true)
+        {
+            IQueryable<Address> query = _db.Addresses.Include(x => x.Account).Include(x => x.AddressInformations);
+            if (!tracked)
+            {
+                query = query.AsNoTracking();
+            }
+            return await query.OrderByDescending(x => x.Status == true).Where(x => x.AccountID == accountId).AsQueryable().ToListAsync();
+        }
+
+        public async Task<Address> GetAsync(int id , bool tracked = true)
+        {
+            IQueryable<Address> query = _db.Addresses.Include(x => x.Account).Include(x => x.AddressInformations);
+            if (!tracked)
+            {
+                query = query.AsNoTracking();
+            }
+            return await query.Where(e => e.Id == id).FirstOrDefaultAsync();
+        }
+
+        public async Task RemoveAsync(Address address)
+        {
+             _db.Remove(address);
+             _db.Remove(address.AddressInformations);
+
+        }
+
+        public async Task SaveAsync()
+        {
             await _db.SaveChangesAsync();
         }
 
-        public async Task<ICollection<AddressDTO>> GetAllAsync(string accountId)
+        public async Task UpdateAsync(Address address)
         {
-            return await _db.Addresses
-                .Include(x => x.Account)
-                 .ProjectAddressToAddressDto()
-                .Where(x => x.AccountID == accountId)
-                .AsQueryable()
-                .ToListAsync();
+             _db.Update(address);
         }
 
-        public async Task<AddressDTO> GetAsync(int id)
+        public async Task UpdateRangeAsync(List<Address> address)
         {
-            return await _db.Addresses
-                .Include(x => x.Account)
-                .ProjectAddressToAddressDto()
-                .Where(e => e.Id == id)
-                .FirstOrDefaultAsync();
-        }
-
-        public async Task RemoveAsync(Address entity)
-        {
-             _db.Remove(entity);
-            await _db.SaveChangesAsync();
-        }
-
-        public async Task UpdateAsync(Address entity)
-        {
-             _db.Update(entity);
-            await _db.SaveChangesAsync();
+            _db.UpdateRange(address);
         }
     }
 }

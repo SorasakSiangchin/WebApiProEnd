@@ -4,6 +4,7 @@ using WebApi.Repositorys.IRepositorys;
 using WebApiProjectEnd.Modes;
 using System.Net;
 using WebApi.Modes.DTOS.Order;
+using Microsoft.Identity.Client;
 
 namespace WebApi.Endpoints
 {
@@ -12,10 +13,11 @@ namespace WebApi.Endpoints
         public static void ConfigureOrderEndpoints(this WebApplication app)
         {
             app.MapGet("orders", GetAllOrder).WithName("GetAllOrder").Produces<APIResponse>(200);
+            app.MapPost("orders/accountId", GetAccountID).WithName("GetAccountID").Accepts<AccountIDRequest>("application/json").Produces<APIResponse>(200);
             app.MapGet("order/{Id}", GetOrder).WithName("GetOrder").Produces<APIResponse>(200); 
             app.MapPost("orders", CreatOrder).WithName("CreatOrder").Accepts<CreateOrderDto>("application/json").Produces<APIResponse>(200).Produces(400) ;
+            
         }
-
         private async static Task<IResult> GetAllOrder(IOrderRepository _orderRepo , string accountId)
         {
             APIResponse response = new();
@@ -25,7 +27,6 @@ namespace WebApi.Endpoints
             response.StatusCode = HttpStatusCode.OK;
             return Results.Ok(response);
         }
-
         private async static Task<IResult> GetOrder(IOrderRepository _orderRepo, string Id , string accountId)
         {
             APIResponse response = new();
@@ -49,6 +50,22 @@ namespace WebApi.Endpoints
             response.IsSuccess = true;
             response.StatusCode = HttpStatusCode.OK;
             return Results.Ok(response);
+        }
+
+        private async static Task<IResult> GetAccountID(IOrderRepository _orderRepo, AccountIDRequest model)
+        {
+            APIResponse response = new();
+            var accountIds = _orderRepo.GetAccountIdAsync(model.cartItemId, model.cartId).GetAwaiter().GetResult();
+            response.Result = accountIds;
+            response.IsSuccess = true;
+            response.StatusCode = HttpStatusCode.OK;
+            return Results.Ok(response);
+        }
+
+        public  class AccountIDRequest 
+        {
+            public string cartId { get; set; }
+            public int[] cartItemId { get; set; }
         }
     }
 }

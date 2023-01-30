@@ -12,10 +12,10 @@ namespace WebApi.Extenstions
         {
             return query.Select(address => new AddressDTO
             {
-                Id = address.Id ,
-                AccountID = address.AccountID ,
-                Account = address.Account ,
-                AddressInformations = address.AddressInformations ,
+                Id = address.Id,
+                AccountID = address.AccountID,
+                Account = address.Account,
+                AddressInformations = address.AddressInformations,
                 Status = address.Status
             }).AsNoTracking();
         }

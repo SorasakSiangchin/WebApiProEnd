@@ -7,7 +7,9 @@ namespace WebApi.Repositorys.IRepositorys
 {
     public interface ICartRepository
     {
-        Task<CartDTO> GetCartAsync(string accountId);
+        Task<CartDTO> GetCartByAccountIdAsync(string accountId);
+        Task<Cart> GetCartAsync(string id);
+        //Task<CartItem> GetCartItemAsync(int cartItenId);
         Task<APIResponse> AddItemToCartAsync(AddCartRequestDTO addCartDTO);
         Task<APIResponse> RemoveItemToCartAsync(AddCartRequestDTO addCartDTO);
     }

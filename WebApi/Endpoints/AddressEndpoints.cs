@@ -17,10 +17,11 @@ namespace WebApi.Endpoints
         public static void ConfigureAddressEndpoints(this WebApplication app)
         {
             app.MapGet("addresses", GetAllAddresses).WithName("GetAllAddresses").Produces<APIResponse>(200);
-            app.MapGet("address/{id}", GetAllAddress).WithName("GetAllAddress").Produces<APIResponse>(200);
+            app.MapGet("address/{id:int}", GetAddress).WithName("GetAddress").Produces<APIResponse>(200);
             app.MapPost("address", CreateAddress).WithName("CreateAddress").Accepts<CreateAddressDTO>("application/json").Produces<APIResponse>(200).Produces(400); 
             app.MapPut("address", UpdateAddress).WithName("UpdateAddress").Accepts<UpdateAddressDTO>("application/json").Produces<APIResponse>(200).Produces(400);
-        
+            app.MapPut("address/status", UpdateStatusAddress).WithName("UpdateStatusAddress").Accepts<UpdateAddressDTO>("application/json").Produces<APIResponse>(200).Produces(400);
+            app.MapDelete("address/{id:int}", DeleteAddress).WithName("DeleteAddress").Produces<APIResponse>(200).Produces(400);
         }
 
         private static async Task<IResult> GetAllAddresses(IAddressRepository _addressRepo , string accountId)
@@ -32,7 +33,7 @@ namespace WebApi.Endpoints
             response.IsSuccess = true;
             return Results.Ok(response);
         }
-        private static async Task<IResult> GetAllAddress(IAddressRepository _addressRepo , int Id)
+        private static async Task<IResult> GetAddress(IAddressRepository _addressRepo , int Id)
         {
             APIResponse response = new();
             var address = await _addressRepo.GetAsync(Id);
@@ -59,6 +60,7 @@ namespace WebApi.Endpoints
             var result = await _addressRepo.GetAllAsync(address.AccountID);
             if (result?.Count == 0) address.Status = true;
             await _addressRepo.CreactAsync(address);
+            await _addressRepo.SaveAsync();
             response.Result = address;
             response.StatusCode = HttpStatusCode.OK;
             response.IsSuccess = true;
@@ -68,18 +70,55 @@ namespace WebApi.Endpoints
         private static async Task<IResult> UpdateAddress(IMapper _mapper, IAddressRepository _addressRepo, IAccountRepository _accountRepo, UpdateAddressDTO model)
         {
             APIResponse response = new() { IsSuccess = false, StatusCode = HttpStatusCode.BadRequest };
-            var address = await _addressRepo.GetAsync(model.Id);
-            if (address == null)
+            if (await _addressRepo.GetAsync(model.Id) == null)
             {
                 response.ErrorMessages.Add("ไม่พบที่อยู่ปัจจุบัน");
                 return Results.BadRequest(response);
             }
-            _mapper.Map(model , address);
-            await _addressRepo.UpdateAsync(_mapper.Map<Address>(address));
-            response.Result = address;
+            await _addressRepo.UpdateAsync(_mapper.Map<Address>(model));
+            await _addressRepo.SaveAsync();
+            response.Result = model;
             response.StatusCode = HttpStatusCode.OK;
             response.IsSuccess = true;
             return Results.Ok(response);
+        }
+
+        private static async Task<IResult> UpdateStatusAddress(IMapper _mapper, IAddressRepository _addressRepo, IAccountRepository _accountRepo, UpdateAddressDTO model)
+        {
+            APIResponse response = new() { IsSuccess = false, StatusCode = HttpStatusCode.BadRequest };
+            var addresses = await _addressRepo.GetAllAsync(model.AccountID);
+            addresses = addresses.Select(x =>
+            {
+                if (x.Id != model.Id) x.Status = false;
+                else x.Status = true;
+                return x;
+            }).ToList();
+            await _addressRepo.UpdateRangeAsync(addresses);
+            await _addressRepo.SaveAsync();
+            response.Result = model;
+            response.StatusCode = HttpStatusCode.OK;
+            response.IsSuccess = true;
+            return Results.Ok(response);
+        }
+
+        private async static Task<IResult> DeleteAddress(IAddressRepository _addressRepo , int id)
+        {
+            APIResponse response = new() { IsSuccess = false, StatusCode = HttpStatusCode.BadRequest };
+            var address = await _addressRepo.GetAsync(id);
+            if (address != null)
+            {
+                await _addressRepo.RemoveAsync(address);
+                await _addressRepo.SaveAsync();
+                response.IsSuccess = true;
+                response.Result = address;
+                response.StatusCode = HttpStatusCode.OK;
+                return Results.Ok(response);
+            }
+            else
+            {
+                response.ErrorMessages.Add("ไม่พบที่อยู่นี้");
+                return Results.BadRequest(response);
+            }
         }
 
     }

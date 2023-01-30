@@ -75,7 +75,7 @@ namespace WebApiProjectEnd.Repositorys
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
-            var accountCart = await _cartRepo.GetCartAsync(account.Id);
+            var accountCart = await _cartRepo.GetCartByAccountIdAsync(account.Id);
             LoginResponseDTO loginResponseDTO = new()
             {
                 Account = _mapper.Map<AccountDTO>(AccountResponse.FromAccount(account)),

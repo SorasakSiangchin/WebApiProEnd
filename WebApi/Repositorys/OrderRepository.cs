@@ -2,6 +2,7 @@
 using WebApi.Extenstions;
 using WebApi.Models;
 using WebApi.Models.OrderAggregate;
+using WebApi.Modes.CartAggregate;
 using WebApi.Modes.DTOS.Order;
 using WebApi.Repositorys.IRepositorys;
 using WebApiProjectEnd.Repositorys.IRepositorys;
@@ -12,11 +13,13 @@ namespace WebApi.Repositorys
     {
         private readonly ApplicationDbContext _db;
         private readonly IProductRepository _productRepo;
+        private readonly ICartRepository _cartRepo;
 
-        public OrderRepository(ApplicationDbContext db, IProductRepository productRepo)
+        public OrderRepository(ApplicationDbContext db, IProductRepository productRepo , ICartRepository cartRepo)
         {
             _db = db;
             _productRepo = productRepo;
+            _cartRepo = cartRepo;
         }
 
         public async Task<string> CreactAsync(CreateOrderDto createOrder)
@@ -62,6 +65,30 @@ namespace WebApi.Repositorys
             .FirstOrDefaultAsync();
             return order;
         }
+
+        public async Task<List<string>> GetAccountIdAsync(int[] cartItemId, string cartId)
+        {
+            var accountIds = new List<string>();
+            var cartItems = new List<CartItem>();
+            var carts = await _cartRepo.GetCartAsync(cartId);
+
+            if (carts != null)
+            {
+                foreach (var itemId in cartItemId)
+                {
+                   var cartItem = carts.Items.Find(x => x.Id == itemId);
+                    if (cartItem != null) cartItems.Add(cartItem);
+                }
+                foreach (var item in cartItems)
+                {
+                    var product = await _productRepo.GetAsync(item.ProductId);
+                    var result = accountIds.Find(x => x == product.AccountID);
+                    if (result == null) accountIds.Add(product.AccountID);
+                }
+            }
+            return accountIds;
+        }
+
         private string GenerateID() => Guid.NewGuid().ToString("N");
     }
 }
