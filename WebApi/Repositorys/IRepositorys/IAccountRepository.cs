@@ -8,6 +8,7 @@ namespace WebApiProjectEnd.Repositorys.IRepositorys
     {
         Task<ICollection<Account>> GetAllAsync();
         Task UpdateAsync(Account account);
+        Task<AccountDTO> UpdatePassword(Account account, string passwordNew);
         Task<Account> GetAsync(string id, bool tracked = true);
         bool IsUniqueEmail(string email);
         Task<LoginResponseDTO> Login(LoginRequestDTO loginRequestDTO);

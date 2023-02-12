@@ -16,12 +16,11 @@ namespace WebApi.Repositorys
         {
             _db = db;
         }
-
         public async Task CreactAsync(Address address)
         {
             await _db.AddAsync(address);
+            await _db.SaveChangesAsync();
         }
-
         public async Task<List<Address>> GetAllAsync(string accountId, bool tracked = true)
         {
             IQueryable<Address> query = _db.Addresses.Include(x => x.Account).Include(x => x.AddressInformations);
@@ -31,7 +30,6 @@ namespace WebApi.Repositorys
             }
             return await query.OrderByDescending(x => x.Status == true).Where(x => x.AccountID == accountId).AsQueryable().ToListAsync();
         }
-
         public async Task<Address> GetAsync(int id , bool tracked = true)
         {
             IQueryable<Address> query = _db.Addresses.Include(x => x.Account).Include(x => x.AddressInformations);
@@ -41,27 +39,24 @@ namespace WebApi.Repositorys
             }
             return await query.Where(e => e.Id == id).FirstOrDefaultAsync();
         }
-
         public async Task RemoveAsync(Address address)
         {
              _db.Remove(address);
              _db.Remove(address.AddressInformations);
+             await _db.SaveChangesAsync();
 
-        }
-
-        public async Task SaveAsync()
-        {
-            await _db.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(Address address)
         {
              _db.Update(address);
+            await _db.SaveChangesAsync();
         }
 
         public async Task UpdateRangeAsync(List<Address> address)
         {
             _db.UpdateRange(address);
+            await _db.SaveChangesAsync();
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using WebApi.Models;
 using WebApi.Models.DTOS.Address;
+using WebApi.Models.DTOS.DetailProduct;
 using WebApi.Modes;
 using WebApi.Modes.DTOS.Address;
 using WebApi.Modes.DTOS.ImageProduct;
@@ -28,8 +29,10 @@ namespace WebApiProjectEnd
             CreateMap<ImageProduct, ImageProductDTO>().ReverseMap();
             CreateMap<Address, CreateAddressDTO>().ReverseMap();
             CreateMap<AddressDTO, UpdateAddressDTO>().ReverseMap();
-            CreateMap<Address, UpdateAddressDTO>().ReverseMap();
+            CreateMap<UpdateAddressDTO, Address>().ReverseMap();
             CreateMap<AddressDTO, Address>().ReverseMap();
+
+            CreateMap<DetailProduct , DetailProductDTO>().ReverseMap();
         }
     }
 }

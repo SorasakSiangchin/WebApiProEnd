@@ -25,7 +25,6 @@ try
     // orm
     await context.Database.MigrateAsync();   //สร้ำง DB ใหอ้ตัโนมตัถิำยังไม่มี ***** ใช้งานได้จริง
 }
-
 catch (Exception ex)
 {
     logger.LogError(ex, "Problem migrating data");
@@ -57,14 +56,19 @@ app.UseAuthentication();
 //การอนุญาต
 app.UseAuthorization();
 
-//----- CodeArea --------
+
 app.ConfigureAccountEndpoints();
 app.ConfigureProductEndpoints();
+app.ConfigureDetailProductEndpoints();
 app.ConfigureImageProductEndpoints();
 app.ConfigureCategoryProductEndpoints();
 app.ConfigureCartEndpoints();
 app.ConfigureAddressEndpoints();
 app.ConfigureOrderEndpoints();
+app.ConfigureWeightUnitEndpoints();
+app.ConfigureLevelProductEndpoints();
+app.ConfigureEvidenceMoneyTransferEndpoints();
+
 //app.UseEndpoints(endpoints =>
 //{
 //    endpoints.MapControllers();

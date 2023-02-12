@@ -8,6 +8,6 @@ namespace WebApi.Repositorys.IRepositorys
         Task<ICollection<OrderDTO>> GetAllAsync(string accountId);
         Task<List<string>> GetAccountIdAsync(int[] cartItemId  , string cartId);
         Task<OrderDTO> GetAsync(string Id, string accountId);
-        Task<string> CreactAsync(CreateOrderDto createOrder);
+        Task CreactAsync(CreateOrderDto createOrder);
     }
 }

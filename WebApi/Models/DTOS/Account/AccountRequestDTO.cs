@@ -10,6 +10,7 @@ namespace WebApiProjectEnd.Modes.DTOS.Accounts
         public string? Email { get; set; }
         public string? Password { get; set; }
         public string? PhoneNumber { get; set; }
+        public string? PasswordNew { get; set; }
         public IFormFileCollection? FormFiles { get; set; }
         public int? RoleID { get; set; }
         private static string SetData(string name, HttpContext context)
@@ -24,12 +25,13 @@ namespace WebApiProjectEnd.Modes.DTOS.Accounts
             return ValueTask.FromResult<AccountRequestDTO?>(new AccountRequestDTO
             {
                 FormFiles = file ,
-                Id = SetData("Id", context),
-                Email = SetData("Email" , context),
-                FirstName = SetData("FirstName", context),
-                LastName = SetData("LastName", context),
-                Password = SetData("Password", context),
-                PhoneNumber = SetData("PhoneNumber", context),
+                Id = SetData("Id", context) ,
+                Email = SetData("Email" , context) ,
+                FirstName = SetData("FirstName", context) ,
+                LastName = SetData("LastName", context) ,
+                Password = SetData("Password", context) ,
+                PhoneNumber = SetData("PhoneNumber", context) ,
+                PasswordNew = SetData("PasswordNew", context) ,
                 RoleID = roleID
 
             }); ;

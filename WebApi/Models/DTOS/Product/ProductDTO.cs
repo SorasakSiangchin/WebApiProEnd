@@ -1,4 +1,6 @@
 ﻿using System.Reflection;
+using WebApi.Models;
+using WebApi.Models.DTOS.DetailProduct;
 using WebApiProjectEnd.Modes.DTOS.Accounts;
 
 namespace WebApi.Modes.DTOS.Product
@@ -16,8 +18,10 @@ namespace WebApi.Modes.DTOS.Product
         public DateTime? LastUpdate { get; set; }
         public int WeightUnitID { get; set; }
         public int CategoryProductID { get; set; }
+        public int LevelProductID { get; set; }
         public IFormFileCollection? FormFiles { get; set; }
-       
+        public DetailProductDTO DetailProduct { get; set; }
+
         public static ValueTask<ProductDTO?> BindAsync(HttpContext context,
                                                   ParameterInfo parameter)
         {
@@ -36,6 +40,7 @@ namespace WebApi.Modes.DTOS.Product
                 WeightUnitID = SetIntData("WeightUnitID", context),
                 CategoryProductID = SetIntData("CategoryProductID", context),
                 AccountID = SetStringData("AccountID", context),
+                LevelProductID = SetIntData("LevelProductID", context),
                 FormFiles = file,
             }); 
         }

@@ -106,12 +106,5 @@ namespace WebApi.Repositorys
             return cart;
         }
 
-        //public async Task<CartItem> GetCartItemAsync(int cartItenId)
-        //{
-        //    var cartItem = await _db.Carts.
-             
-        //    if (cartItem == null) return null;
-        //    return cartItem;
-        //}
     }
 }

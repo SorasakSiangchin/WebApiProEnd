@@ -17,11 +17,12 @@ namespace WebApiProjectEnd.Endpoints
         {
             app.MapGet("/account", GetAllAccount).WithName("GetAccounts").Produces<APIResponse>(200); //.RequireAuthorization("AdminOnly");
             app.MapGet("/account/info", Info).WithName("Info").Produces<APIResponse>(200).Produces(401);
-            app.MapGet("/role", GetAllRole).WithName("GetAllRoles").Produces<APIResponse>(200);
+            app.MapGet("/roles", GetAllRole).WithName("GetAllRoles").Produces<APIResponse>(200);
             app.MapGet("/account/{id}", GetAccount).WithName("GetAccount").Produces<APIResponse>(200);
             app.MapPost("/register", Register).WithName("Register").Accepts<AccountRequestDTO>("multipart/form-data").Produces<APIResponse>(200).Produces(400); ;
             app.MapPost("/login", Login).WithName("Login").Accepts<LoginRequestDTO>("multipart/form-data").Produces<APIResponse>(200).Produces(400); ;
             app.MapPut("/account", UpdateAccount).WithName("UpdateAccount").Accepts<AccountRequestDTO>("multipart/form-data").Produces<APIResponse>(200).Produces(400); ;
+            app.MapPut("/account/password", UpdateAccountPassword).WithName("UpdateAccountPassword").Accepts<AccountRequestDTO>("multipart/form-data").Produces<APIResponse>(200).Produces(400); ;
         }
 
         private async static Task<IResult> GetAllAccount(IAccountRepository _accountRepo)
@@ -128,6 +129,19 @@ namespace WebApiProjectEnd.Endpoints
             #endregion
 
             await _accountRepo.UpdateAsync(account);
+            response.Result = AccountResponse.FromAccount(await _accountRepo.GetAsync(account.Id, tracked: false));
+            response.IsSuccess = true;
+            response.StatusCode = HttpStatusCode.OK;
+            return Results.Ok(response);
+        }
+
+        private static async Task<IResult> UpdateAccountPassword(IMapper _mapper, IAccountRepository _accountRepo, AccountRequestDTO model)
+        {
+            APIResponse response = new() { IsSuccess = false, StatusCode = HttpStatusCode.BadRequest };
+            var account = await _accountRepo.GetAsync(model.Id);
+            if (account == null) return Results.NotFound();
+            _mapper.Map(model, account); // แทนค่า
+            await _accountRepo.UpdatePassword(account , model.PasswordNew);
             response.Result = AccountResponse.FromAccount(await _accountRepo.GetAsync(account.Id, tracked: false));
             response.IsSuccess = true;
             response.StatusCode = HttpStatusCode.OK;

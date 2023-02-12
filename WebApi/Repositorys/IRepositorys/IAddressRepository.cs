@@ -11,7 +11,6 @@ namespace WebApi.Repositorys.IRepositorys
         Task CreactAsync(Address address);
         Task UpdateAsync(Address address);
         Task UpdateRangeAsync(List<Address> address);
-        Task SaveAsync();
         Task RemoveAsync(Address address);
     }
 }

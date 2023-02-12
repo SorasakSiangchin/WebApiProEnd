@@ -1,14 +1,13 @@
 ﻿using AutoMapper;
-using Azure;
 using FluentValidation;
 using System.Net;
-using System.Text.Json;
 using WebApi.Extenstions;
 using WebApi.Models;
 using WebApi.Modes;
 using WebApi.Modes.DTOS.Product;
 using WebApi.RequestHelpers;
 using WebApiProjectEnd.Repositorys.IRepositorys;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace WebApiProjectEnd.Endpoints
@@ -41,7 +40,6 @@ namespace WebApiProjectEnd.Endpoints
             response.StatusCode = HttpStatusCode.OK;
             return Results.Ok(response);
         }
-
         private static async Task<IResult> GetProductRare(IProductRepository _productRepo)
         {
             APIResponse response = new();
@@ -51,7 +49,6 @@ namespace WebApiProjectEnd.Endpoints
             response.StatusCode = HttpStatusCode.OK;
             return Results.Ok(response);
         }
-
         private static async Task<IResult> GetProduct(IProductRepository _productRepo , string id)
         {
             APIResponse response = new();
@@ -65,7 +62,6 @@ namespace WebApiProjectEnd.Endpoints
             response.StatusCode = HttpStatusCode.OK;
             return Results.Ok(response);
         }
-
         private static async Task<IResult> CreateProduct(IMapper _mapper, IProductRepository _productRepo, IAccountRepository _accountRepo , ProductDTO model)
         {
             APIResponse response = new() { IsSuccess = false, StatusCode = HttpStatusCode.BadRequest };
@@ -87,7 +83,9 @@ namespace WebApiProjectEnd.Endpoints
             
             var product = _mapper.Map<Product>(model);
             product.ImageUrl = imageName ;
+            product.Created = DateTime.Now;
             await _productRepo.CreactAsync(product);
+            await _productRepo.SaveAsync();
             response.Result = product;
             response.IsSuccess = true;
             response.StatusCode = HttpStatusCode.Created;
@@ -106,15 +104,18 @@ namespace WebApiProjectEnd.Endpoints
                 response.ErrorMessages.Add(erorrMesage);
                 return Results.BadRequest(response);
             }
+            var data = _mapper.Map<Product>(model);
             if (!string.IsNullOrEmpty(imageName))
             {
                 await _productRepo.DeleteImage(product.ImageUrl);
+                data.ImageUrl = imageName;
             }
+            else data.ImageUrl = product.ImageUrl;            
             #endregion
-            var data = _mapper.Map<Product>(model);
-            data.ImageUrl = imageName;
+            
             data.LastUpdate = DateTime.Now;
             await _productRepo.UpdateAsync(data);
+            await _productRepo.SaveAsync();
             response.Result = data;
             response.IsSuccess = true;
             response.StatusCode = HttpStatusCode.OK;
@@ -127,8 +128,9 @@ namespace WebApiProjectEnd.Endpoints
             var product = await _productRepo.GetAsync(id);
             if (product != null)
             {
-                await _productRepo.RemoveAsync(product);
                 await _productRepo.DeleteImage(product.ImageUrl);
+                await _productRepo.RemoveAsync(product);
+                await _productRepo.SaveAsync();
                 response.IsSuccess = true;
                 response.StatusCode = HttpStatusCode.NoContent;
                 return Results.Ok(response);

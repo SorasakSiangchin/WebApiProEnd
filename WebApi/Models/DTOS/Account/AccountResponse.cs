@@ -13,6 +13,7 @@ namespace WebApi.Modes
         public string Password { get; set; }
         public string PhoneNumber { get; set; }
         public string ImageUrl { get; set; }
+        public int RoleID { get; set; }
         public Role Role { get; set; }
 
         public static AccountResponse FromAccount(Account account)
@@ -30,7 +31,8 @@ namespace WebApi.Modes
                 {
                     Id = account.Role.Id,
                     Name = account.Role.Name,
-                }
+                },
+                RoleID = account.RoleID
             };
         }
     }

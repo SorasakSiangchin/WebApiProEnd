@@ -10,7 +10,8 @@ namespace WebApi.Extenstions
 {
     public static class OrderExtensions
     {
-        public static IQueryable<OrderDTO> ProjectOrderToOrderDto(this IQueryable<Order> query)
+
+        public static IQueryable<OrderDTO> ProjectOrderToOrderDto(this IQueryable<Order> query , ApplicationDbContext db)
         {
             return query
                 .Select(order => new OrderDTO
@@ -24,7 +25,7 @@ namespace WebApi.Extenstions
                     Subtotal = order.Subtotal,
                     OrderStatus = order.OrderStatus.ToString(),
                     Total = order.GetTotal(),
-                    OrderItems = order.OrderItems.Select(item => new OrderItemDTO
+                    OrderItems = db.OrderItems.Where(e => e.OrderID == order.Id).Select(item => new OrderItemDTO
                     {
                         Amount = item.Amount,
                         ImageUrl = item.ItemOrdered.ImageUrl,

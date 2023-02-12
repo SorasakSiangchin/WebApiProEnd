@@ -32,7 +32,7 @@ namespace WebApi.Repositorys
             await _uploadFile.DeleteFile(fileName, "imageProduct");
         }
 
-        public async Task<ICollection<ImageProduct>> GetAllAsync(string productID) => await _db.ImageProducts.Where(x => x.ProductID.Equals(productID)).ToListAsync();
+        public async Task<ICollection<ImageProduct>> GetAllAsync(string productID) => await _db.ImageProducts.OrderBy(e => e.Id).Where(x => x.ProductID.Equals(productID)).ToListAsync();
         
 
         public async Task<ImageProduct> GetAsync(string id, bool tracked = true)

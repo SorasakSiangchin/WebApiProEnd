@@ -23,7 +23,6 @@ namespace WebApiProjectEnd.Repositorys
         {
             product.Id = GenerateID();
             await _db.Products.AddAsync(product);   
-            await _db.SaveChangesAsync();
         }
 
         public  async Task<ICollection<Product>> GetAllAsync(ProductParams? productParams)
@@ -34,13 +33,17 @@ namespace WebApiProjectEnd.Repositorys
                 .Search(productParams.SearchTerm)
                 .Include(e => e.CategoryProduct)
                 .Include(e => e.WeightUnit)
+                .Include(e => e.LevelProduct)
                 .AsQueryable()
                 .ToListAsync();
         }
 
         public async Task<Product> GetAsync(string id , bool tracked = true)
         {
-            IQueryable<Product> query = _db.Products.Include(e => e.CategoryProduct);
+            IQueryable<Product> query = _db.Products
+                .Include(e => e.CategoryProduct)
+                .Include(e => e.WeightUnit)
+                .Include(e => e.LevelProduct);
             if (!tracked)
             {
                 query = query.AsNoTracking();
@@ -56,18 +59,19 @@ namespace WebApiProjectEnd.Repositorys
         public async Task RemoveAsync(Product product)
         {
             _db.Products.Remove(product);
-            await _db.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(Product product)
         {
-            _db.Products.Update(product);
+            _db.Update(product);
+        }
+        public async Task SaveAsync()
+        {
             await _db.SaveChangesAsync();
         }
         public async Task<(string errorMessage, string imageName)> UploadImage(IFormFileCollection formFiles)
         {
             var errorMessage = string.Empty;
-            //var imageName = new List<string>();
             var imageName = string.Empty;
             if (_uploadFile.IsUpload(formFiles))
             {

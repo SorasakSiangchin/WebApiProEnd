@@ -93,6 +93,13 @@ namespace WebApiProjectEnd.Repositorys
             await _db.SaveChangesAsync();
             return _mapper.Map<AccountDTO>(account);
         }
+        public async Task<AccountDTO> UpdatePassword(Account account , string passwordNew)
+        {
+            account.Password = CreateHashPassword(passwordNew);
+            _db.Update(account);
+            await _db.SaveChangesAsync();
+            return _mapper.Map<AccountDTO>(account);
+        }
 
         public async Task<(string errorMessage, string imageName)> UploadImage(IFormFileCollection formFiles)
         {
@@ -146,7 +153,6 @@ namespace WebApiProjectEnd.Repositorys
 
             return hashed == passwordHash;
         }
-
         public Account GetInfo(string accessToken)
         {
             //as JwtSecurityToken แปลงค่า Token (ถอดรหัส)

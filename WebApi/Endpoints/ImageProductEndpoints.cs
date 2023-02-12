@@ -15,20 +15,20 @@ namespace WebApi.Endpoints
         {
             app.MapGet("/imageproduct/{productID}", GetImageProduct).WithName("GetImageProduct").Produces<APIResponse>(200);
             app.MapPost("/imageproduct", CreateImageProduct).WithName("CreateImageProduct").Accepts<ImageProductDTO>("multipart/form-data").Produces<APIResponse>(200).Produces(400); ;
-            app.MapDelete("/imageproduct/{id}", DeleteImageProduct).WithName("DeleteImageProduct").Accepts<ImageProductDTO>("application/json");
+            app.MapDelete("/imageproduct/{id}", DeleteImageProduct).WithName("DeleteImageProduct");
         }
-        private static async Task<IResult> GetImageProduct(string productID , IImageProductRepository _imageProductRepo)
+        private static async Task<IResult> GetImageProduct(string productID, IImageProductRepository _imageProductRepo)
         {
             APIResponse response = new();
             var result = await _imageProductRepo.GetAllAsync(productID);
-            response.Result =  result.Select(ImageProductResponse.FromImageProduct);
+            response.Result = result.Select(ImageProductResponse.FromImageProduct);
             response.IsSuccess = true;
             response.StatusCode = HttpStatusCode.OK;
             return Results.Ok(response);
         }
-        private static async Task<IResult> CreateImageProduct(IMapper _mapper, ImageProductDTO model , IImageProductRepository _imageProductRepo)
+        private static async Task<IResult> CreateImageProduct(IMapper _mapper, ImageProductDTO model, IImageProductRepository _imageProductRepo)
         {
-            APIResponse response = new() { IsSuccess = false , StatusCode = HttpStatusCode.BadRequest  };
+            APIResponse response = new() { IsSuccess = false, StatusCode = HttpStatusCode.BadRequest };
             (string errorMessage, List<string> imageName) = await _imageProductRepo.UploadImage(model.FormFiles);
             if (!string.IsNullOrEmpty(errorMessage))
             {
@@ -36,39 +36,32 @@ namespace WebApi.Endpoints
                 return Results.Ok(response);
             }
             var imageProduct = _mapper.Map<ImageProduct>(model);
-            await _imageProductRepo.CreactAsync(imageProduct , imageName);
+            await _imageProductRepo.CreactAsync(imageProduct, imageName);
             response.Result = imageProduct;
             response.IsSuccess = true;
             response.StatusCode = HttpStatusCode.Created;
             return Results.Ok(response);
         }
 
-        private static async Task<IResult> DeleteImageProduct( IImageProductRepository _imageProductRepo , [FromBody] ImageProductId model)
+        private static async Task<IResult> DeleteImageProduct(IImageProductRepository _imageProductRepo, string id)
         {
             APIResponse response = new() { IsSuccess = false, StatusCode = HttpStatusCode.BadRequest };
 
-            for (int i = 0; i < model.Id.Count; i++)
+            var imageProduct = await _imageProductRepo.GetAsync(id);
+            if (imageProduct != null)
             {
-                var imageProduct = await _imageProductRepo.GetAsync(model.Id[i]);
-                if (imageProduct != null)
-                {
-                    await _imageProductRepo.RemoveAsync(imageProduct);
-                    await _imageProductRepo.DeleteImage(imageProduct.ImageUrl);
-                }
-                else
-                {
-                    response.ErrorMessages.Add("รหัสไม่ถูกต้อง");
-                    return Results.BadRequest(response);
-                }
+                await _imageProductRepo.RemoveAsync(imageProduct);
+                await _imageProductRepo.DeleteImage(imageProduct.ImageUrl);
             }
+            else
+            {
+                response.ErrorMessages.Add("รหัสไม่ถูกต้อง");
+                return Results.BadRequest(response);
+            }
+
             response.IsSuccess = true;
             response.StatusCode = HttpStatusCode.NoContent;
             return Results.Ok(response);
         }
     }
-}
-
-class ImageProductId
-{
-    public List<string> Id { get; set; }
 }

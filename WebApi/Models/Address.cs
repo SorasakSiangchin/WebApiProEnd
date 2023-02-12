@@ -10,6 +10,5 @@ namespace WebApi.Models
         public string AccountID { get; set; }
         [ForeignKey("AccountID")]
         public virtual Account Account { get; set; }
- 
     }
 }

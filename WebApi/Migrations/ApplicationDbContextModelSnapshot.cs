@@ -58,30 +58,6 @@ namespace WebApi.Migrations
                     b.HasIndex("RoleID");
 
                     b.ToTable("Accounts");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "account-01",
-                            Email = "Sorasak@gmail.com",
-                            FirstName = "Sorasak",
-                            ImageUrl = "",
-                            LastName = "Siangchin",
-                            Password = "1233211213",
-                            PhoneNumber = "0616032203",
-                            RoleID = 1
-                        },
-                        new
-                        {
-                            Id = "account-02",
-                            Email = "Anirut@gmail.com",
-                            FirstName = "Anirut",
-                            ImageUrl = "",
-                            LastName = "Chairuen",
-                            Password = "4566544546",
-                            PhoneNumber = "0927680099",
-                            RoleID = 2
-                        });
                 });
 
             modelBuilder.Entity("WebApi.Models.AccountPassword", b =>
@@ -351,6 +327,40 @@ namespace WebApi.Migrations
                     b.ToTable("ImageReviews");
                 });
 
+            modelBuilder.Entity("WebApi.Models.LevelProduct", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Level")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LevelProducts");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Level = "หาได้ทั่วไป"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Level = "ปานกลาง"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Level = "หายาก"
+                        });
+                });
+
             modelBuilder.Entity("WebApi.Models.OrderAggregate.Order", b =>
                 {
                     b.Property<string>("Id")
@@ -398,7 +408,8 @@ namespace WebApi.Migrations
                     b.Property<int>("Amount")
                         .HasColumnType("int");
 
-                    b.Property<string>("OrderId")
+                    b.Property<string>("OrderID")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Price")
@@ -406,9 +417,9 @@ namespace WebApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex("OrderID");
 
-                    b.ToTable("OrderItem");
+                    b.ToTable("OrderItems");
                 });
 
             modelBuilder.Entity("WebApi.Models.Product", b =>
@@ -439,6 +450,9 @@ namespace WebApi.Migrations
                     b.Property<DateTime?>("LastUpdate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("LevelProductID")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -459,71 +473,11 @@ namespace WebApi.Migrations
 
                     b.HasIndex("CategoryProductID");
 
+                    b.HasIndex("LevelProductID");
+
                     b.HasIndex("WeightUnitID");
 
                     b.ToTable("Products");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "product-01",
-                            AccountID = "account-01",
-                            CategoryProductID = 2,
-                            Color = "red",
-                            Created = new DateTime(2023, 1, 25, 22, 18, 39, 540, DateTimeKind.Local).AddTicks(9331),
-                            Description = "",
-                            ImageUrl = "df339981-6e81-4b28-bbb9-bdcb194a05a3.jpg",
-                            Name = "Product01",
-                            Price = 100,
-                            Stock = 5,
-                            Weight = 20.0,
-                            WeightUnitID = 1
-                        },
-                        new
-                        {
-                            Id = "product-02",
-                            AccountID = "account-01",
-                            CategoryProductID = 2,
-                            Color = "green",
-                            Created = new DateTime(2023, 1, 25, 22, 18, 39, 540, DateTimeKind.Local).AddTicks(9338),
-                            Description = "",
-                            ImageUrl = "d6667cbd-f010-43b8-95e0-bf3d8ff218bb.jpg",
-                            Name = "Product02",
-                            Price = 200,
-                            Stock = 6,
-                            Weight = 10.0,
-                            WeightUnitID = 2
-                        },
-                        new
-                        {
-                            Id = "product-03",
-                            AccountID = "account-01",
-                            CategoryProductID = 2,
-                            Color = "blue",
-                            Created = new DateTime(2023, 1, 25, 22, 18, 39, 540, DateTimeKind.Local).AddTicks(9342),
-                            Description = "",
-                            ImageUrl = "d3c013ec-f736-4750-86a5-53b0c6136a9c.jpg",
-                            Name = "Product03",
-                            Price = 300,
-                            Stock = 7,
-                            Weight = 30.0,
-                            WeightUnitID = 1
-                        },
-                        new
-                        {
-                            Id = "product-04",
-                            AccountID = "account-01",
-                            CategoryProductID = 2,
-                            Color = "black",
-                            Created = new DateTime(2023, 1, 25, 22, 18, 39, 540, DateTimeKind.Local).AddTicks(9345),
-                            Description = "",
-                            ImageUrl = "be242077-737c-48ae-935d-f0ba03ec7d25.jpg",
-                            Name = "Product04",
-                            Price = 400,
-                            Stock = 8,
-                            Weight = 40.0,
-                            WeightUnitID = 2
-                        });
                 });
 
             modelBuilder.Entity("WebApi.Models.Review", b =>
@@ -804,9 +758,11 @@ namespace WebApi.Migrations
 
             modelBuilder.Entity("WebApi.Models.OrderAggregate.OrderItem", b =>
                 {
-                    b.HasOne("WebApi.Models.OrderAggregate.Order", null)
-                        .WithMany("OrderItems")
-                        .HasForeignKey("OrderId");
+                    b.HasOne("WebApi.Models.OrderAggregate.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.OwnsOne("WebApi.Modes.OrderAggregate.ProductItemOrdered", "ItemOrdered", b1 =>
                         {
@@ -827,7 +783,7 @@ namespace WebApi.Migrations
 
                             b1.HasKey("OrderItemId");
 
-                            b1.ToTable("OrderItem");
+                            b1.ToTable("OrderItems");
 
                             b1.WithOwner()
                                 .HasForeignKey("OrderItemId");
@@ -835,6 +791,8 @@ namespace WebApi.Migrations
 
                     b.Navigation("ItemOrdered")
                         .IsRequired();
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("WebApi.Models.Product", b =>
@@ -845,6 +803,12 @@ namespace WebApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("WebApi.Models.LevelProduct", "LevelProduct")
+                        .WithMany()
+                        .HasForeignKey("LevelProductID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("WebApi.Models.WeightUnit", "WeightUnit")
                         .WithMany()
                         .HasForeignKey("WeightUnitID")
@@ -852,6 +816,8 @@ namespace WebApi.Migrations
                         .IsRequired();
 
                     b.Navigation("CategoryProduct");
+
+                    b.Navigation("LevelProduct");
 
                     b.Navigation("WeightUnit");
                 });
@@ -895,11 +861,6 @@ namespace WebApi.Migrations
                     b.Navigation("Cart");
 
                     b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("WebApi.Models.OrderAggregate.Order", b =>
-                {
-                    b.Navigation("OrderItems");
                 });
 
             modelBuilder.Entity("WebApi.Modes.CartAggregate.Cart", b =>

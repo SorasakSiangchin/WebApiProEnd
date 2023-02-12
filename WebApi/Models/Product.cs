@@ -14,14 +14,17 @@ namespace WebApi.Models
         public string? Description { get; set; }
         public string ImageUrl { get; set; }
         public string AccountID { get; set; }
-        public DateTime? Created { get; set; } = DateTime.Now;
+        public DateTime? Created { get; set; }
         public DateTime? LastUpdate { get; set; }
         public int WeightUnitID { get; set; }
+        public int LevelProductID { get; set; }
         public int CategoryProductID { get; set; }
         [ForeignKey("WeightUnitID")]
         public virtual WeightUnit WeightUnit { get; set; }
         [ForeignKey("CategoryProductID")]
         public virtual CategoryProduct CategoryProduct { get; set; }
+        [ForeignKey("LevelProductID")]
+        public virtual LevelProduct LevelProduct { get; set; }
 
     }
 }

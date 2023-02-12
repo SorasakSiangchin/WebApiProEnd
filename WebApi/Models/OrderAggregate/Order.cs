@@ -14,7 +14,6 @@ namespace WebApi.Models.OrderAggregate
         public bool OrderCancel { get; set; }
         public OrderStatus OrderStatus { get; set; } = OrderStatus.Pending;
         public DateTime Created { get; set; } = DateTime.Now;
-        public List<OrderItem> OrderItems { get; set; }
         public int AddressID { get; set; }
         [ForeignKey("AddressID")]
         public virtual Address Address { get; set; }

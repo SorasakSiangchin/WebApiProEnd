@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using WebApi.Extenstions;
 using WebApi.Models;
 using WebApi.Models.OrderAggregate;
 using WebApi.Modes.CartAggregate;
 using WebApi.Modes.DTOS.Order;
+using WebApi.Modes.OrderAggregate;
 using WebApi.Repositorys.IRepositorys;
 using WebApiProjectEnd.Repositorys.IRepositorys;
 
@@ -15,43 +17,62 @@ namespace WebApi.Repositorys
         private readonly IProductRepository _productRepo;
         private readonly ICartRepository _cartRepo;
 
-        public OrderRepository(ApplicationDbContext db, IProductRepository productRepo , ICartRepository cartRepo)
+        public OrderRepository(ApplicationDbContext db, IProductRepository productRepo, ICartRepository cartRepo)
         {
             _db = db;
             _productRepo = productRepo;
             _cartRepo = cartRepo;
         }
 
-        public async Task<string> CreactAsync(CreateOrderDto createOrder)
+        public async Task CreactAsync(CreateOrderDto createOrder)
         {
-            //var items = new List<OrderItem>();
-            foreach (var item in createOrder.OrderItems)
+            List<OrderItem> orderItems = new();
+            var cart = await _cartRepo.GetCartAsync(createOrder.CartID);
+            foreach (var accountId in createOrder.AccountIdFromProduct)
             {
-                var product = await _productRepo.GetAsync(item.ItemOrdered.ProductID);
-                product.Stock -= item.Amount;
+                Order order = new()
+                {
+                    Id = GenerateID(),
+                    AddressID = createOrder.AddressID,
+                    CustomerStatus = false,
+                    Subtotal = 0,
+                    DeliveryFee = 0,
+                    SellerStatus = false,
+                    OrderCancel = false,
+                };
+                foreach (var item in createOrder.OrderItems)
+                {
+                    var product = await _productRepo.GetAsync(item.ItemOrdered.ProductID);
+                    product.Stock -= item.Amount;
+                    if (product.AccountID == accountId) orderItems.Add(new OrderItem
+                    {
+                        Amount = item.Amount,
+                        OrderID = order.Id,
+                        ItemOrdered = item.ItemOrdered,
+                        Price = item.Price,
+
+                    });
+                }
+                var subtotal = orderItems.Sum(item => item.Price * item.Amount);
+                var deliveryFee = subtotal > 10000 ? 0 : 500;
+                order.Subtotal = subtotal;
+                order.DeliveryFee = deliveryFee;
+
+                await _db.AddAsync(order);
+                await _db.AddRangeAsync(orderItems);
+                for (int i = 0; i < orderItems.Count; i++) orderItems.Remove(orderItems[i]);
             }
-            var subtotal = createOrder.OrderItems.Sum(item => item.Price * item.Amount);
-            var deliveryFee = subtotal > 10000 ? 0 : 500;
-            Order order = new()
-            {
-                Id = GenerateID(),
-                AddressID = createOrder.AddressID,
-                CustomerStatus = false,
-                Subtotal = subtotal,
-                DeliveryFee = deliveryFee,
-                OrderItems = createOrder.OrderItems,
-                SellerStatus = false,
-                OrderCancel = false,
-            };
-            await _db.AddAsync(order);
+            _db.Remove(cart);
             await _db.SaveChangesAsync();
-            return order.Id;
+
         }
 
         public async Task<ICollection<OrderDTO>> GetAllAsync(string accountId)
         {
-            var orders = await _db.Orders.Include(e => e.Address)
-                 .ProjectOrderToOrderDto()
+            var orders = await _db.Orders
+                 .Include(e => e.Address)
+                 .ThenInclude(e => e.AddressInformations)
+                 .ProjectOrderToOrderDto(_db)
                  .Where(x => x.Address.AccountID == accountId)
                  .ToListAsync();
             return orders;
@@ -60,7 +81,7 @@ namespace WebApi.Repositorys
         public async Task<OrderDTO> GetAsync(string Id, string accountId)
         {
             var order = await _db.Orders.Include(e => e.Address)
-            .ProjectOrderToOrderDto()
+            .ProjectOrderToOrderDto(_db)
             .Where(x => x.Address.AccountID == accountId && x.Id == Id)
             .FirstOrDefaultAsync();
             return order;
@@ -76,7 +97,7 @@ namespace WebApi.Repositorys
             {
                 foreach (var itemId in cartItemId)
                 {
-                   var cartItem = carts.Items.Find(x => x.Id == itemId);
+                    var cartItem = carts.Items.Find(x => x.Id == itemId);
                     if (cartItem != null) cartItems.Add(cartItem);
                 }
                 foreach (var item in cartItems)

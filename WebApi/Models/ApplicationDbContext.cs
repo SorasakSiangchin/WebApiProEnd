@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 using WebApi.Models.OrderAggregate;
 using WebApi.Modes.CartAggregate;
 
@@ -10,6 +11,7 @@ namespace WebApi.Models
         {
 
         }
+        public DbSet<LevelProduct> LevelProducts { get; set; }
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<AccountPassword> AccountPasswords { get; set; }
@@ -22,7 +24,9 @@ namespace WebApi.Models
         public DbSet<EvidenceMoneyTransfer> EvidenceMoneyTransfers { get; set; }
         public DbSet<ImageReview> ImageReviews { get; set; }
         public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Product> Products { get; set; }
+        
         public DbSet<Review> Reviews { get; set; }
         public DbSet<StatusDelivery> StatusDeliverys { get; set; }
         public DbSet<WeightUnit> WeightUnits { get; set; }
@@ -38,18 +42,13 @@ namespace WebApi.Models
                    new Role { Id = 2, Name = "seller" },
                    new Role { Id = 3, Name = "admin" }
                );
-            builder.Entity<Account>()
-             .HasData(
-                 new Account { Id = "account-01", FirstName = "Sorasak", LastName = "Siangchin", Email = "Sorasak@gmail.com", ImageUrl = "", Password = "1233211213", PhoneNumber = "0616032203", RoleID = 1 },
-                 new Account { Id = "account-02", FirstName = "Anirut", LastName = "Chairuen", Email = "Anirut@gmail.com", ImageUrl = "", Password = "4566544546", PhoneNumber = "0927680099", RoleID = 2 }
-             );
 
             builder.Entity<CategoryProduct>()
             .HasData(
 
-                new CategoryProduct { Id = 2, Name = "category-01"},
+                new CategoryProduct { Id = 2, Name = "category-01" },
                 new CategoryProduct { Id = 3, Name = "category-02" },
-                 new CategoryProduct { Id = 999, Name = "rare"}
+                 new CategoryProduct { Id = 999, Name = "rare" }
             );
             builder.Entity<WeightUnit>()
             .HasData(
@@ -57,14 +56,12 @@ namespace WebApi.Models
                 new WeightUnit { Id = 1, Name = "ลูก" },
                 new WeightUnit { Id = 2, Name = "กิโลกรัม" }
             );
-            builder.Entity<Product>()
-            .HasData(
-                new Product { Id = "product-01", Name = "Product01", Price = 100, Stock = 5, Color = "red", Weight = 20, Description = "", ImageUrl = "df339981-6e81-4b28-bbb9-bdcb194a05a3.jpg", Created = DateTime.Now, LastUpdate = null, WeightUnitID = 1, CategoryProductID = 2 , AccountID = "account-01" },
-                new Product { Id = "product-02", Name = "Product02", Price = 200, Stock = 6, Color = "green", Weight = 10, Description = "", ImageUrl = "d6667cbd-f010-43b8-95e0-bf3d8ff218bb.jpg", Created = DateTime.Now, LastUpdate = null, WeightUnitID = 2, CategoryProductID = 2, AccountID = "account-01" },
-                new Product { Id = "product-03", Name = "Product03", Price = 300, Stock = 7, Color = "blue", Weight = 30, Description = "", ImageUrl = "d3c013ec-f736-4750-86a5-53b0c6136a9c.jpg", Created = DateTime.Now, LastUpdate = null, WeightUnitID = 1, CategoryProductID = 2, AccountID = "account-01" },
-                new Product { Id = "product-04", Name = "Product04", Price = 400, Stock = 8, Color = "black", Weight = 40, Description = "", ImageUrl = "be242077-737c-48ae-935d-f0ba03ec7d25.jpg", Created = DateTime.Now, LastUpdate = null, WeightUnitID = 2, CategoryProductID = 2, AccountID = "account-01" }
-
-            ); ;
+            builder.Entity<LevelProduct>()
+           .HasData(
+               new LevelProduct { Id = 1, Level = "หาได้ทั่วไป" },
+               new LevelProduct { Id = 2, Level = "ปานกลาง" },
+               new LevelProduct { Id = 3, Level = "หายาก" }
+           );
         }
     }
 

@@ -10,5 +10,6 @@ namespace WebApi.Repositorys.IRepositorys
         Task CreactAsync(T entity);
         Task UpdateAsync(T entity);
         Task RemoveAsync(T entity);
+        Task SaveAsync();
     }
 }

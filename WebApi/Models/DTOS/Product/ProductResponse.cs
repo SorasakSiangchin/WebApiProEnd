@@ -21,8 +21,11 @@ namespace WebApi.Modes
         public DateTime? LastUpdate { get; set; }
         public int WeightUnitID { get; set; }
         public string AccountID { get; set; }
+        public int LevelProductID { get; set; }
+        public int CategoryProductID { get; set; }
         public WeightUnit WeightUnit { get; set; }
         public CategoryProduct CategoryProduct { get; set; }
+        public LevelProduct LevelProduct { get; set; }
         static public ProductResponse FromProduct(Product product)
         {
             return new ProductResponse
@@ -40,7 +43,11 @@ namespace WebApi.Modes
                 WeightUnitID= product.WeightUnitID,
                 WeightUnit = product.WeightUnit,
                 CategoryProduct= product.CategoryProduct,
+                CategoryProductID = product.CategoryProductID,
                 AccountID = product.AccountID,
+                LevelProductID= product.LevelProductID,
+                LevelProduct = product.LevelProduct,
+                
             };
         }
     }
