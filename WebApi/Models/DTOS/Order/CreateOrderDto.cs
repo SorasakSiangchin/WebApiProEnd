@@ -4,7 +4,7 @@ using WebApi.Models.OrderAggregate;
 
 namespace WebApi.Modes.DTOS.Order
 {
-    public class CreateOrderDto
+    public class CreateOrderDTO
     {
         public int AddressID { get; set; }
         public List<OrderItemRequestDTO> OrderItems { get; set; }

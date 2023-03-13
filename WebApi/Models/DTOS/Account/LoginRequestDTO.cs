@@ -13,8 +13,6 @@ namespace WebApiProjectEnd.Modes.DTOS.Accounts
         public static ValueTask<LoginRequestDTO?> BindAsync(HttpContext context,
                                                    ParameterInfo parameter)
         {
-
-      
             return ValueTask.FromResult<LoginRequestDTO?>(new LoginRequestDTO
             {
               Email = SetData("Email" , context) ,

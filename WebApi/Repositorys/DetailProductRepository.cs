@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebApi.Models;
 using WebApi.Repositorys.IRepositorys;
-using WebApi.RequestHelpers;
 
 namespace WebApi.Repositorys
 {

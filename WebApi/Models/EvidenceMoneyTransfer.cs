@@ -7,6 +7,7 @@ namespace WebApi.Models
     {
         public int Id { get; set; }
         public string Evidence { get; set; }
+        public bool Status { get; set; }
         public DateTime? Created { get; set; }
         public string OrderID { get; set; }
         [ForeignKey("OrderID")]

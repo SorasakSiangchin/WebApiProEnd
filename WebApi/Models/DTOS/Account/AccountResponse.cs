@@ -13,6 +13,7 @@ namespace WebApi.Modes
         public string Password { get; set; }
         public string PhoneNumber { get; set; }
         public string ImageUrl { get; set; }
+        public bool? Status { get; set; }
         public int RoleID { get; set; }
         public Role Role { get; set; }
 
@@ -26,14 +27,30 @@ namespace WebApi.Modes
                 LastName = account.LastName,
                 Password = account.Password,
                 PhoneNumber = account.PhoneNumber,
-                ImageUrl = !string.IsNullOrEmpty(account.ImageUrl) ? $"{applicationUrl.Url}/account/{account.ImageUrl}" : "",
+                ImageUrl = CheckImageUrl(account.ImageUrl , account.LoginBy) ,
                 Role = new Role
                 {
                     Id = account.Role.Id,
                     Name = account.Role.Name,
                 },
-                RoleID = account.RoleID
+                RoleID = account.RoleID,
+                Status = account.Status,
             };
+        }
+
+        private static string CheckImageUrl(string? ImageUrl , string? loginBy)
+        {
+            if (string.IsNullOrEmpty(loginBy))
+            {
+                if (!string.IsNullOrEmpty(ImageUrl)) return $"{ApplicationUrl.Url}/account/{ImageUrl}";
+                else return "";
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(ImageUrl)) return ImageUrl;
+                else return "";
+            }
+           
         }
     }
 }

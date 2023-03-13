@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using WebApi.Extenstions;
 using WebApi.Models;
 using WebApi.Repositorys.IRepositorys;
 using WebApi.RequestHelpers;
-using WebApiProjectEnd.Modes;
 using WebApiProjectEnd.Repositorys.IRepositorys;
 
 namespace WebApiProjectEnd.Repositorys
@@ -11,26 +11,27 @@ namespace WebApiProjectEnd.Repositorys
     public class ProductRepository : IProductRepository
     {
         private readonly ApplicationDbContext _db;
-        private readonly IUploadFileRepository _uploadFile;
+        private readonly IUploadFileRepository _uploadFileRepo;
 
-        public ProductRepository(ApplicationDbContext db , IUploadFileRepository uploadFile)
+        public ProductRepository(ApplicationDbContext db, IUploadFileRepository uploadFileRepo)
         {
             _db = db;
-            _uploadFile = uploadFile;
+            _uploadFileRepo = uploadFileRepo;
         }
 
         public async Task CreactAsync(Product product)
         {
             product.Id = GenerateID();
-            await _db.Products.AddAsync(product);   
+            await _db.Products.AddAsync(product);
         }
 
-        public  async Task<ICollection<Product>> GetAllAsync(ProductParams? productParams)
+        public async Task<ICollection<Product>> GetAllAsync(ProductParams? productParams)
         {
             return await _db.Products.Include(e => e.CategoryProduct)
-                .RangePrice(productParams.RangePriceStart , productParams.RangePriceEnd)
+                .RangePrice(productParams.RangePriceStart, productParams.RangePriceEnd)
                 .Filter(productParams.Category)
                 .Search(productParams.SearchTerm)
+                .ByAccountID(productParams.AccountID)
                 .Include(e => e.CategoryProduct)
                 .Include(e => e.WeightUnit)
                 .Include(e => e.LevelProduct)
@@ -38,7 +39,7 @@ namespace WebApiProjectEnd.Repositorys
                 .ToListAsync();
         }
 
-        public async Task<Product> GetAsync(string id , bool tracked = true)
+        public async Task<Product> GetAsync(string id, bool tracked = true)
         {
             IQueryable<Product> query = _db.Products
                 .Include(e => e.CategoryProduct)
@@ -51,7 +52,7 @@ namespace WebApiProjectEnd.Repositorys
             return await query.FirstOrDefaultAsync(e => e.Id.Equals(id));
         }
 
-        public  async Task<ICollection<Product>> GetAsyncByName(string name)
+        public async Task<ICollection<Product>> GetAsyncByNameAsync(string name)
         {
             return await _db.Products.Where(e => e.Name.Contains(name)).ToListAsync();
         }
@@ -73,27 +74,54 @@ namespace WebApiProjectEnd.Repositorys
         {
             var errorMessage = string.Empty;
             var imageName = string.Empty;
-            if (_uploadFile.IsUpload(formFiles))
+            if (_uploadFileRepo.IsUpload(formFiles))
             {
-                errorMessage = _uploadFile.Validation(formFiles);
+                errorMessage = _uploadFileRepo.Validation(formFiles);
                 if (string.IsNullOrEmpty(errorMessage))
                 {
-                    imageName = (await _uploadFile.UploadFile(formFiles, "product"))[0];
+                    imageName = (await _uploadFileRepo.UploadFile(formFiles, "product"))[0];
                 }
             }
             return (errorMessage, imageName);
         }
 
-        private string GenerateID() => Guid.NewGuid().ToString("N"); 
+        private string GenerateID() => Guid.NewGuid().ToString("N");
 
         public async Task DeleteImage(string fileName)
         {
-            await _uploadFile.DeleteFile(fileName, "product");
+            await _uploadFileRepo.DeleteFile(fileName, "product");
         }
 
         public async Task<ICollection<Product>> GetRareAsync()
         {
-            return await _db.Products.Include(e => e.CategoryProduct).Where(e => e.CategoryProductID.Equals(999)).ToListAsync();
+            return await _db.Products
+                .Include(e => e.CategoryProduct)
+                .Where(e => e.CategoryProductID
+                .Equals(1005))
+                .ToListAsync();
+        }
+
+        public async Task<ICollection<Product>> GetProductByAccountIdAsync(string accountId)
+        {
+           return await _db.Products
+                .Include(e => e.CategoryProduct)
+                .Include(e => e.CategoryProduct)
+                .Include(e => e.WeightUnit)
+                .Include(e => e.LevelProduct)
+                .Where(e => e.AccountID.Equals(accountId))
+                .ToListAsync();
+        }
+
+        public async Task<ICollection<Product>> GetRecommendAsync(int num)
+        {
+            return await _db.Products
+             .Include(e => e.CategoryProduct)
+             .Include(e => e.CategoryProduct)
+             .Include(e => e.WeightUnit)
+             .Include(e => e.LevelProduct)
+             .OrderByDescending(e => e.Created)
+             .Take(num)
+             .ToListAsync();
         }
     }
 }

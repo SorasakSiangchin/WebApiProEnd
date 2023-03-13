@@ -9,5 +9,6 @@ namespace WebApi.Models
         public int ReviewID { get; set; }
         [ForeignKey("ReviewID")]
         public virtual Review Review { get; set; }
+
     }
 }

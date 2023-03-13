@@ -37,7 +37,7 @@ namespace WebApi.Modes
                 Color= product.Color,
                 Weight= product.Weight,
                 Description= product.Description,
-                ImageUrl= !string.IsNullOrEmpty(product.ImageUrl) ? $"{applicationUrl.Url}/product/{product.ImageUrl}"  : "",
+                ImageUrl= !string.IsNullOrEmpty(product.ImageUrl) ? $"{ApplicationUrl.Url}/product/{product.ImageUrl}"  : "",
                 Created= product.Created,
                 LastUpdate= product.LastUpdate,
                 WeightUnitID= product.WeightUnitID,

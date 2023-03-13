@@ -1,6 +1,4 @@
 ﻿using WebApi.Models;
-using WebApi.Modes.DTOS.Address;
-using WebApi.RequestHelpers;
 
 namespace WebApi.Repositorys.IRepositorys
 {

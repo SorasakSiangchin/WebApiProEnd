@@ -1,10 +1,8 @@
-﻿
-using WebApi.Repositorys.IRepositorys;
+﻿using WebApi.Repositorys.IRepositorys;
 using System.Net;
 using WebApi.Modes.DTOS.ImageProduct;
 using AutoMapper;
 using WebApi.Modes;
-using Microsoft.AspNetCore.Mvc;
 using WebApi.Models;
 
 namespace WebApi.Endpoints

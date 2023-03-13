@@ -1,9 +1,4 @@
 ﻿using AutoMapper;
-using Azure;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.JsonPatch;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Net;
 using WebApi.Models;
 using WebApi.Models.DTOS.Address;

@@ -14,7 +14,7 @@ namespace WebApi.Modes
             return new ImageProductResponse
             {
                 Id = imageProduct.Id,
-                ImageUrl = !string.IsNullOrEmpty(imageProduct.ImageUrl) ? $"{applicationUrl.Url}/imageProduct/{imageProduct.ImageUrl}" : "",
+                ImageUrl = !string.IsNullOrEmpty(imageProduct.ImageUrl) ? $"{ApplicationUrl.Url}/imageProduct/{imageProduct.ImageUrl}" : "",
                 ProductID = imageProduct.ProductID
             };
         }

@@ -1,12 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using WebApi.Extenstions;
 using WebApi.Models;
 using WebApi.Models.OrderAggregate;
 using WebApi.Modes.CartAggregate;
 using WebApi.Modes.DTOS.Order;
-using WebApi.Modes.OrderAggregate;
 using WebApi.Repositorys.IRepositorys;
+using WebApi.RequestHelpers;
 using WebApiProjectEnd.Repositorys.IRepositorys;
 
 namespace WebApi.Repositorys
@@ -24,7 +23,7 @@ namespace WebApi.Repositorys
             _cartRepo = cartRepo;
         }
 
-        public async Task CreactAsync(CreateOrderDto createOrder)
+        public async Task CreactAsync(CreateOrderDTO createOrder)
         {
             List<OrderItem> orderItems = new();
             var cart = await _cartRepo.GetCartAsync(createOrder.CartID);
@@ -33,6 +32,7 @@ namespace WebApi.Repositorys
                 Order order = new()
                 {
                     Id = GenerateID(),
+                    Created = DateTime.Now ,
                     AddressID = createOrder.AddressID,
                     CustomerStatus = false,
                     Subtotal = 0,
@@ -64,25 +64,24 @@ namespace WebApi.Repositorys
             }
             _db.Remove(cart);
             await _db.SaveChangesAsync();
-
         }
 
-        public async Task<ICollection<OrderDTO>> GetAllAsync(string accountId)
+        public async Task<ICollection<OrderDTO>> GetByAccountIdAsync(string accountId)
         {
             var orders = await _db.Orders
                  .Include(e => e.Address)
                  .ThenInclude(e => e.AddressInformations)
-                 .ProjectOrderToOrderDto(_db)
+                 .ProjectOrderToOrderDTO(_db)
                  .Where(x => x.Address.AccountID == accountId)
                  .ToListAsync();
             return orders;
         }
 
-        public async Task<OrderDTO> GetAsync(string Id, string accountId)
+        public async Task<OrderDTO> GetAsync(string Id)
         {
             var order = await _db.Orders.Include(e => e.Address)
-            .ProjectOrderToOrderDto(_db)
-            .Where(x => x.Address.AccountID == accountId && x.Id == Id)
+            .ProjectOrderToOrderDTO(_db)
+            .Where(x => x.Id == Id)
             .FirstOrDefaultAsync();
             return order;
         }
@@ -111,5 +110,36 @@ namespace WebApi.Repositorys
         }
 
         private string GenerateID() => Guid.NewGuid().ToString("N");
+
+        public async Task UpdateAsync(Order order)
+        {
+            _db.Update(order);
+            await _db.SaveChangesAsync();
+        }
+
+        public async Task<ICollection<OrderDTO>> GetAllAsync(OrderParams orderParams)
+        {
+            var orders = await _db.Orders
+              .Include(e => e.Address)
+              .ThenInclude(e => e.AddressInformations)
+              .Search(orderParams.Id)
+              .ByAccountID(orderParams.AccountId)
+              .FilterCancel(orderParams.OrderCancel)
+              .FilterStatus(orderParams.OrderStatus)
+              .ProjectOrderToOrderDTO(_db)
+              .ToListAsync();
+            if (!string.IsNullOrEmpty(orderParams.SellerId))
+            {
+                List<OrderDTO> ordersDTO = new();
+                foreach (var order in orders)
+                {
+                    var items = order.OrderItems.Where(e => e.AccountID == orderParams.SellerId);
+                    if (items.Count() > 0) ordersDTO.Add(order);
+                }
+                return ordersDTO;
+            }
+
+            return orders;
+        }
     }
 }

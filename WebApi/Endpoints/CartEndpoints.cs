@@ -1,9 +1,7 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using System.Net;
+﻿using System.Net;
 using WebApi.Models;
 using WebApi.Modes.DTOS.Cart;
 using WebApi.Repositorys.IRepositorys;
-using WebApiProjectEnd.Modes;
 
 namespace WebApi.Endpoints
 {

@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using WebApi.Models;
+﻿using WebApi.Models;
 
 namespace WebApiProjectEnd.Installers
 {
@@ -7,9 +6,7 @@ namespace WebApiProjectEnd.Installers
     {
         public void InstallServices(WebApplicationBuilder builder)
         {
-            builder.Services.AddDbContext<ApplicationDbContext>(
-    option => option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultDbConnection"))
-);
+            builder.Services.AddDbContext<ApplicationDbContext>();
         }
     }
 }

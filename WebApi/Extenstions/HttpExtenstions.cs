@@ -9,7 +9,6 @@ namespace WebApi.Extenstions
         {
             //แปลงชื่อตัวแปรให้เป็นตัวเล็กตามกฏการใช้งานของ json
             var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-
             response.Headers.Add("Pagination", JsonSerializer.Serialize(metaData, options));
             response.Headers.Add("Access-Control-Expose-Headers", "Pagination");
         }

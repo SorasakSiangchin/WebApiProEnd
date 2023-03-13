@@ -59,20 +59,17 @@ namespace WebApi.Repositorys
             return listFileName;
         }
 
+       
+
         public string Validation(IFormFileCollection formFiles)
         {
             foreach (var file in formFiles)
             {
                 // เช็คนามสกุลไฟล์ 
-                if (!ValidationExtension(file.FileName))
-                {
-                    return "Invalid file extension";
-                }
+                if (!ValidationExtension(file.FileName)) return "Invalid file extension";
+                
                 // เช็คขนาดของไฟล์
-                if (!ValidationSize(file.Length))
-                {
-                    return "The file is too large";
-                }
+                if (!ValidationSize(file.Length)) return "The file is too large";
             }
             return null;
         }

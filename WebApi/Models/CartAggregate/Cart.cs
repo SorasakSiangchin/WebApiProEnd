@@ -13,7 +13,6 @@ namespace WebApi.Modes.CartAggregate
         public string AccountID { get; set; }
         [ForeignKey("AccountID")]
         public virtual Account Account { get; set; }
-
         public void AddItem(Product product, int amount)
         {
             // ตรวจสอบโดยการ วนลูป ถ้าสินค้าที่ส่งมาไม่มีในตะกร้าให้เพิ่มเข้าไป

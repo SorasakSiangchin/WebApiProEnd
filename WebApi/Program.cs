@@ -68,6 +68,10 @@ app.ConfigureOrderEndpoints();
 app.ConfigureWeightUnitEndpoints();
 app.ConfigureLevelProductEndpoints();
 app.ConfigureEvidenceMoneyTransferEndpoints();
+app.ConfigureReportEndpoints();
+app.ConfigureDeliveryEndpoints();
+app.ConfigureStatusDeliveryEndpoints();
+app.ConfigureReviewEndpoints();
 
 //app.UseEndpoints(endpoints =>
 //{

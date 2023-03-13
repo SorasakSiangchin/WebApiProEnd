@@ -11,6 +11,14 @@ namespace WebApi.Models
         {
 
         }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            base.OnConfiguring(optionsBuilder);
+            optionsBuilder.UseSqlServer("Server=DESKTOP-6TJ4MKL;Database=project-end-api;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True");
+            //optionsBuilder.UseSqlite("Data Source=project-end-api.db");
+        }
+
         public DbSet<LevelProduct> LevelProducts { get; set; }
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Role> Roles { get; set; }
@@ -26,7 +34,6 @@ namespace WebApi.Models
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Product> Products { get; set; }
-        
         public DbSet<Review> Reviews { get; set; }
         public DbSet<StatusDelivery> StatusDeliverys { get; set; }
         public DbSet<WeightUnit> WeightUnits { get; set; }
@@ -45,10 +52,9 @@ namespace WebApi.Models
 
             builder.Entity<CategoryProduct>()
             .HasData(
-
                 new CategoryProduct { Id = 2, Name = "category-01" },
                 new CategoryProduct { Id = 3, Name = "category-02" },
-                 new CategoryProduct { Id = 999, Name = "rare" }
+                new CategoryProduct { Id = 999, Name = "rare" }
             );
             builder.Entity<WeightUnit>()
             .HasData(

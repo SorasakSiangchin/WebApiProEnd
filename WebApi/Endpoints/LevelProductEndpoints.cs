@@ -1,8 +1,6 @@
 ﻿using System.Net;
-using System.Security.Principal;
 using WebApi.Models;
 using WebApi.Repositorys.IRepositorys;
-using WebApiProjectEnd.Modes.DTOS.Accounts;
 
 namespace WebApi.Endpoints
 {

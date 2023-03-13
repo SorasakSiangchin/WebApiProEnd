@@ -6,5 +6,6 @@
         public int RangePriceStart { get; set; } = 0;
         public int RangePriceEnd { get; set; } = 0;
         public string? SearchTerm { get; set; }
+        public string? AccountID { get; set; }
     }
 }

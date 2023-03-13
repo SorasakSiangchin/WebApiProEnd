@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using WebApiProjectEnd.Modes;
+﻿using WebApi.Models;
+using WebApi.Modes;
 
 namespace WebApi.RequestHelpers
 {

@@ -1,5 +1,4 @@
 ﻿using WebApi.RequestHelpers;
-using WebApiProjectEnd.Modes;
 
 namespace WebApi.Repositorys.IRepositorys
 {

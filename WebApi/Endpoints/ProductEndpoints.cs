@@ -7,7 +7,6 @@ using WebApi.Modes;
 using WebApi.Modes.DTOS.Product;
 using WebApi.RequestHelpers;
 using WebApiProjectEnd.Repositorys.IRepositorys;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace WebApiProjectEnd.Endpoints
@@ -18,14 +17,16 @@ namespace WebApiProjectEnd.Endpoints
         {
             app.MapPost("/products", GetAllProduct).WithName("GetProducts").Accepts<PaginationParams>("application/json").Produces<APIResponse>(200);
             app.MapGet("/product/{id}", GetProduct).WithName("GetProduct").Produces<APIResponse>(200);
-            app.MapPost("/product", CreateProduct).WithName("CreateProduct").Accepts<ProductDTO>("multipart/form-data").Produces<APIResponse>(200).Produces(400);
+            app.MapGet("/product/accountId", GetProductByAccountId).WithName("GetProductByAccountId").Produces<APIResponse>(200);
+            app.MapPost("/product", CreateProduct).WithName("CreateProduct").Accepts<ProductRequest>("multipart/form-data").Produces<APIResponse>(200).Produces(400);
             app.MapGet("/product/rare", GetProductRare).WithName("GetProductRare").Produces<APIResponse>(200);
-            app.MapPut("/product", UpdateProduct).WithName("UpdateProduct").Accepts<ProductDTO>("multipart/form-data").Produces<APIResponse>(200).Produces(400).Produces(404);
+            app.MapGet("/product/recommend", GetProductRecommend).WithName("GetProductRecommend").Produces<APIResponse>(200);
+            app.MapPut("/product", UpdateProduct).WithName("UpdateProduct").Accepts<ProductRequest>("multipart/form-data").Produces<APIResponse>(200).Produces(400).Produces(404);
             app.MapGet("/product/name", GetProductByNames).WithName("GetProductsByName").Produces<APIResponse>(200);
             app.MapDelete("/product/{id}", DeleteProduct);
         }
 
-        private static async Task<IResult> GetAllProduct(HttpResponse httpResponse, IProductRepository _productRepo , ProductParams productParams)
+        private static async Task<IResult> GetAllProduct(HttpResponse httpResponse, IProductRepository _productRepo, ProductParams productParams)
         {
             APIResponse response = new();
 
@@ -40,6 +41,16 @@ namespace WebApiProjectEnd.Endpoints
             response.StatusCode = HttpStatusCode.OK;
             return Results.Ok(response);
         }
+
+        private static async Task<IResult> GetProductRecommend(IProductRepository _productRepo, int num)
+        {
+            APIResponse response = new();
+            var products = await _productRepo.GetRecommendAsync(num);
+            response.Result = products.Select(ProductResponse.FromProduct);
+            response.IsSuccess = true;
+            response.StatusCode = HttpStatusCode.OK;
+            return Results.Ok(response);
+        }
         private static async Task<IResult> GetProductRare(IProductRepository _productRepo)
         {
             APIResponse response = new();
@@ -49,20 +60,17 @@ namespace WebApiProjectEnd.Endpoints
             response.StatusCode = HttpStatusCode.OK;
             return Results.Ok(response);
         }
-        private static async Task<IResult> GetProduct(IProductRepository _productRepo , string id)
+        private static async Task<IResult> GetProduct(IProductRepository _productRepo, string id)
         {
             APIResponse response = new();
-            var data =  await _productRepo.GetAsync(id);
-            if (data == null)
-            {
-                return Results.Ok("ไม่มีข้อมูล");
-            }
+            var data = await _productRepo.GetAsync(id);
+            if (data == null) return Results.Ok("ไม่มีข้อมูล");
             response.Result = ProductResponse.FromProduct(data);
             response.IsSuccess = true;
             response.StatusCode = HttpStatusCode.OK;
             return Results.Ok(response);
         }
-        private static async Task<IResult> CreateProduct(IMapper _mapper, IProductRepository _productRepo, IAccountRepository _accountRepo , ProductDTO model)
+        private static async Task<IResult> CreateProduct(IMapper _mapper, IProductRepository _productRepo, IAccountRepository _accountRepo, ProductRequest model)
         {
             APIResponse response = new() { IsSuccess = false, StatusCode = HttpStatusCode.BadRequest };
 
@@ -80,9 +88,9 @@ namespace WebApiProjectEnd.Endpoints
                 response.ErrorMessages.Add(erorrMesage);
                 return Results.BadRequest(response);
             }
-            
+
             var product = _mapper.Map<Product>(model);
-            product.ImageUrl = imageName ;
+            product.ImageUrl = imageName;
             product.Created = DateTime.Now;
             await _productRepo.CreactAsync(product);
             await _productRepo.SaveAsync();
@@ -92,10 +100,10 @@ namespace WebApiProjectEnd.Endpoints
             return Results.Ok(response);
         }
 
-        private async static Task<IResult> UpdateProduct(IMapper _mapper, IProductRepository _productRepo , ProductDTO model)
+        private async static Task<IResult> UpdateProduct(IMapper _mapper, IProductRepository _productRepo, ProductRequest model)
         {
             APIResponse response = new() { IsSuccess = false, StatusCode = HttpStatusCode.BadRequest };
-            var product = await _productRepo.GetAsync(model.Id , tracked:false);
+            var product = await _productRepo.GetAsync(model.Id, tracked: false);
             if (product == null) return Results.NotFound();
             #region จัดการรูปภาพ
             (string erorrMesage, string imageName) = await _productRepo.UploadImage(model.FormFiles);
@@ -110,9 +118,9 @@ namespace WebApiProjectEnd.Endpoints
                 await _productRepo.DeleteImage(product.ImageUrl);
                 data.ImageUrl = imageName;
             }
-            else data.ImageUrl = product.ImageUrl;            
+            else data.ImageUrl = product.ImageUrl;
             #endregion
-            
+
             data.LastUpdate = DateTime.Now;
             await _productRepo.UpdateAsync(data);
             await _productRepo.SaveAsync();
@@ -144,7 +152,7 @@ namespace WebApiProjectEnd.Endpoints
         private static async Task<IResult> GetProductByNames(IProductRepository _productRepo, string name)
         {
             APIResponse response = new();
-            var data = await _productRepo.GetAsyncByName(name);
+            var data = await _productRepo.GetAsyncByNameAsync(name);
             if (data == null) return Results.Ok("ไม่มีข้อมูล");
             response.Result = data.Select(ProductResponse.FromProduct);
             response.IsSuccess = true;
@@ -152,6 +160,16 @@ namespace WebApiProjectEnd.Endpoints
             return Results.Ok(response);
         }
 
-      
+        private static async Task<IResult> GetProductByAccountId(IProductRepository _productRepo, string accountId)
+        {
+            APIResponse response = new();
+            var data = await _productRepo.GetProductByAccountIdAsync(accountId);
+            response.Result = data.Select(ProductResponse.FromProduct);
+            response.IsSuccess = true;
+            response.StatusCode = HttpStatusCode.OK;
+            return Results.Ok(response);
+        }
+
+
     }
 }

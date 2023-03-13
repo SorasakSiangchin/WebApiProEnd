@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebApi.Models;
-using WebApi.Modes;
 using WebApi.Repositorys.IRepositorys;
 
 namespace WebApi.Repositorys
@@ -38,10 +37,7 @@ namespace WebApi.Repositorys
         public async Task<ImageProduct> GetAsync(string id, bool tracked = true)
         {
             IQueryable<ImageProduct> query = _db.ImageProducts;
-            if (!tracked)
-            {
-                query = query.AsNoTracking();
-            }
+            if (!tracked) query = query.AsNoTracking();
             return await query.FirstOrDefaultAsync(e => e.Id.Equals(id));
         }
 

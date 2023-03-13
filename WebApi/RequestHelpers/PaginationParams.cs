@@ -1,7 +1,4 @@
-﻿using System.Reflection;
-using WebApi.Modes.DTOS.Product;
-
-namespace WebApi.RequestHelpers
+﻿namespace WebApi.RequestHelpers
 {
     public class PaginationParams
     {
@@ -14,17 +11,5 @@ namespace WebApi.RequestHelpers
             set => _pageSize = value > MaxPageSize ? MaxPageSize : value;
         }
 
-        //public static ValueTask<PaginationParams?> BindAsync(HttpContext context,
-        //                                          ParameterInfo parameter)
-        //{
-
-        //    int.TryParse(context.Request.Form["PageNumber"], out int PageNumber);
-        //    int.TryParse(context.Request.Form["PageSize"], out int PageSize);
-        //    return ValueTask.FromResult<PaginationParams?>(new PaginationParams
-        //    {
-        //        PageNumber = PageNumber,
-        //        PageSize= PageSize
-        //    }); ;
-        //}
     }
 }

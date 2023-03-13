@@ -2,11 +2,7 @@
 using AutoMapper;
 using WebApi.Models;
 using WebApi.Models.DTOS.DetailProduct;
-using WebApi.Modes;
-using WebApi.Modes.DTOS.Product;
 using WebApi.Repositorys.IRepositorys;
-using WebApi.RequestHelpers;
-using WebApiProjectEnd.Repositorys.IRepositorys;
 
 namespace WebApi.Endpoints
 {

@@ -6,12 +6,13 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using WebApiProjectEnd.Modes;
 using WebApiProjectEnd.Modes.DTOS.Accounts;
 using WebApiProjectEnd.Repositorys.IRepositorys;
 using WebApi.Repositorys.IRepositorys;
 using WebApi.Modes;
 using WebApi.Models;
+using WebApi.RequestHelpers;
+using WebApi.Extenstions;
 
 namespace WebApiProjectEnd.Repositorys
 {
@@ -23,28 +24,33 @@ namespace WebApiProjectEnd.Repositorys
         private readonly IUploadFileRepository _uploadFile;
         private readonly ICartRepository _cartRepo;
         private string secretKey;
-        public AccountRepository(ApplicationDbContext db , IMapper mapper, IConfiguration configuration , IUploadFileRepository uploadFile , ICartRepository cartRepo)
+        public AccountRepository(ApplicationDbContext db, IMapper mapper, IConfiguration configuration, IUploadFileRepository uploadFile, ICartRepository cartRepo)
         {
             _db = db;
             _mapper = mapper;
             _configuration = configuration;
             _uploadFile = uploadFile;
             _cartRepo = cartRepo;
-            // ดึงข้อมูลจากไฟล์ appsettings มาใส่ secretKey
             secretKey = _configuration.GetValue<string>("ApiSettings:Secret");
         }
-        public async Task<ICollection<Account>> GetAllAsync()
+        public async Task<ICollection<AccountDTO>> GetAllAsync(AccountParams accountParams)
         {
-            return  _db.Accounts.Include(e => e.Role).ToListAsync().GetAwaiter().GetResult();
+            return _db.Accounts
+                .Include(e => e.Role)
+                .SearchName(accountParams.SearchName)
+                .SearchEmail(accountParams.SearchEmail)
+                .SearchPhoneNumber(accountParams.SearchPhoneNumber)
+                .FilterStatus(accountParams.Status)
+                .ProjectAccountToAccountDTO(_db)
+                .ToListAsync()
+                .GetAwaiter()
+                .GetResult();
         }
 
         public async Task<Account> GetAsync(string id, bool tracked = true)
         {
             IQueryable<Account> query = _db.Accounts.Include(e => e.Role);
-            if (!tracked)
-            {
-                query = query.AsNoTracking();
-            }
+            if (!tracked) query = query.AsNoTracking();
             return await query.FirstOrDefaultAsync(e => e.Id.Equals(id));
         }
 
@@ -57,8 +63,8 @@ namespace WebApiProjectEnd.Repositorys
 
         public async Task<LoginResponseDTO> Login(LoginRequestDTO loginRequestDTO)
         {
-            var account = await _db.Accounts.Include(x => x.Role).SingleOrDefaultAsync(x => x.Email == loginRequestDTO.Email);
-            if (account == null || !VerifyPassword(account.Password , loginRequestDTO.Password)) return null;
+            Account account = await CheckEmail(loginRequestDTO.Email);
+            if (account == null || !VerifyPassword(account.Password, loginRequestDTO.Password)) return null;
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(secretKey);
             var tokenDescriptor = new SecurityTokenDescriptor()
@@ -79,21 +85,60 @@ namespace WebApiProjectEnd.Repositorys
             LoginResponseDTO loginResponseDTO = new()
             {
                 Account = _mapper.Map<AccountDTO>(AccountResponse.FromAccount(account)),
-                Token = tokenHandler.WriteToken(token) ,
+                Token = tokenHandler.WriteToken(token),
                 Cart = accountCart
             };
             return loginResponseDTO;
         }
 
+        public async Task<LoginResponseDTO> LoginGoogle(LoginRequestDTO loginRequestDTO)
+        {
+            Account account = await CheckEmail(loginRequestDTO.Email);
+            if (account == null || !VerifyPassword(account.Password, loginRequestDTO.Password)) return null;
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.UTF8.GetBytes(secretKey);
+            var tokenDescriptor = new SecurityTokenDescriptor()
+            {
+                Subject = new ClaimsIdentity(
+                    new Claim[]
+                    {
+                        new Claim("Id" , account.Id),
+                        new Claim("Email" ,account.Email  ),
+                        new Claim("Role" , account.Role.Name)
+                        ,
+                    }),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var accountCart = await _cartRepo.GetCartByAccountIdAsync(account.Id);
+            LoginResponseDTO loginResponseDTO = new()
+            {
+                Account = _mapper.Map<AccountDTO>(account),
+                Token = tokenHandler.WriteToken(token),
+                Cart = accountCart
+            };
+            return loginResponseDTO;
+        }
+
+        public async Task<Account> CheckEmail(string email)
+        {
+            var account = await _db.Accounts.AsNoTracking().Include(x => x.Role).SingleOrDefaultAsync(x => x.Email == email);
+            if (account == null) return null;
+            return account;
+        }
+
         public async Task<AccountDTO> Register(Account account)
         {
             account.Id = GenerateID();
+            var realPassword = account.Password;
             account.Password = CreateHashPassword(account.Password);
             await _db.Accounts.AddAsync(account);
             await _db.SaveChangesAsync();
+            account.Password = realPassword;
             return _mapper.Map<AccountDTO>(account);
         }
-        public async Task<AccountDTO> UpdatePassword(Account account , string passwordNew)
+        public async Task<AccountDTO> UpdatePassword(Account account, string passwordNew)
         {
             account.Password = CreateHashPassword(passwordNew);
             _db.Update(account);
@@ -104,7 +149,6 @@ namespace WebApiProjectEnd.Repositorys
         public async Task<(string errorMessage, string imageName)> UploadImage(IFormFileCollection formFiles)
         {
             var errorMessage = string.Empty;
-            //var imageName = new List<string>();
             var imageName = string.Empty;
 
             if (_uploadFile.IsUpload(formFiles))
@@ -136,9 +180,7 @@ namespace WebApiProjectEnd.Repositorys
               numBytesRequested: 256 / 8));
             return hashed;
         }
-
-        private string GenerateID() => Guid.NewGuid().ToString("N"); 
-       
+        private string GenerateID() => Guid.NewGuid().ToString("N");
         private bool VerifyPassword(string saltAndHashFromDB, string password)
         {
             // ทำการแยกส่วนเป็น 2 สว่น เป็นอเร
@@ -173,10 +215,9 @@ namespace WebApiProjectEnd.Repositorys
         }
         public async Task UpdateAsync(Account account)
         {
-           _db.Update(account);
-           await _db.SaveChangesAsync();
+            _db.Update(account);
+            await _db.SaveChangesAsync();
         }
-
         public async Task DeleteImage(string fileName)
         {
             await _uploadFile.DeleteFile(fileName, "account");

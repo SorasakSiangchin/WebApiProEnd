@@ -2,8 +2,8 @@
 {
     public enum OrderStatus
     {
-        Pending,
-        PaymentReceived,
-        PaymentFailed
+        WaitingForPayment, // กำลังรอการชำระเงิน
+        PendingApproval, // รอการอนุมัติ
+        SuccessfulPayment // ชำระเงินสำเร็จ
     }
 }
