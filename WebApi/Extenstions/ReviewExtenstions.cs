@@ -13,7 +13,6 @@ namespace WebApi.Extenstions
         public static IQueryable<Review> ByProductID(this IQueryable<Review> query, string productId)
         {
             if (string.IsNullOrEmpty(productId)) return query;
-
             return query.Where(p => p.OrderItem.ItemOrdered.ProductID.Equals(productId));
         }
 

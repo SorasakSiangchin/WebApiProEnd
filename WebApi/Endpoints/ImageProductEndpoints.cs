@@ -34,7 +34,7 @@ namespace WebApi.Endpoints
                 return Results.Ok(response);
             }
             var imageProduct = _mapper.Map<ImageProduct>(model);
-            await _imageProductRepo.CreactAsync(imageProduct, imageName);
+            await _imageProductRepo.CreateAsync(imageProduct, imageName);
             response.Result = imageProduct;
             response.IsSuccess = true;
             response.StatusCode = HttpStatusCode.Created;

@@ -176,17 +176,37 @@ namespace WebApi.Migrations
                         new
                         {
                             Id = 2,
-                            Name = "category-01"
+                            Name = "มังคุด"
                         },
                         new
                         {
                             Id = 3,
-                            Name = "category-02"
+                            Name = "ลำไย"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "ทุเรียน"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "เงาะ"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "มะม่วง"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name = "กล้วย"
                         },
                         new
                         {
                             Id = 999,
-                            Name = "rare"
+                            Name = "หายาก"
                         });
                 });
 
@@ -377,6 +397,9 @@ namespace WebApi.Migrations
                     b.Property<int>("AddressID")
                         .HasColumnType("int");
 
+                    b.Property<string>("ClientSecret")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
 
@@ -390,6 +413,15 @@ namespace WebApi.Migrations
                         .HasColumnType("bit");
 
                     b.Property<int>("OrderStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrderUsage")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PaymentIntentId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PaymentMethod")
                         .HasColumnType("int");
 
                     b.Property<bool>("SellerStatus")
@@ -428,6 +460,33 @@ namespace WebApi.Migrations
                     b.HasIndex("OrderID");
 
                     b.ToTable("OrderItems");
+                });
+
+            modelBuilder.Entity("WebApi.Models.OrderAggregate.OrderMessage", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("AccountID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OrderID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderID");
+
+                    b.ToTable("OrderMessages");
                 });
 
             modelBuilder.Entity("WebApi.Models.Product", b =>
@@ -571,6 +630,38 @@ namespace WebApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("StatusDeliverys");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "กำลังเตรียมพัสดุ"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "บริษัทขนส่งเข้ารับพัสดุเรียบร้อยแล้ว"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "พัสดุถึงศูนย์คัดแยกสินค้า"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "พัสดุออกจากศูนย์คัดแยกสินค้า"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "พัสดุถึงสาขาปลายทาง"
+                        },
+                        new
+                        {
+                            Id = 999,
+                            Name = "การจัดส่งสำเร็จ"
+                        });
                 });
 
             modelBuilder.Entity("WebApi.Models.WeightUnit", b =>
@@ -798,6 +889,17 @@ namespace WebApi.Migrations
                         });
 
                     b.Navigation("ItemOrdered")
+                        .IsRequired();
+
+                    b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("WebApi.Models.OrderAggregate.OrderMessage", b =>
+                {
+                    b.HasOne("WebApi.Models.OrderAggregate.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderID")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Order");

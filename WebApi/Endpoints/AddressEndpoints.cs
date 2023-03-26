@@ -54,7 +54,7 @@ namespace WebApi.Endpoints
             var address = _mapper.Map<Address>(model);
             var result = await _addressRepo.GetAllAsync(address.AccountID);
             if (result?.Count == 0) address.Status = true;
-            await _addressRepo.CreactAsync(address);
+            await _addressRepo.CreateAsync(address);
             response.Result = address;
             response.StatusCode = HttpStatusCode.OK;
             response.IsSuccess = true;

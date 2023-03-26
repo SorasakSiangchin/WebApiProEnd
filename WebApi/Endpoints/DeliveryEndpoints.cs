@@ -28,7 +28,7 @@ namespace WebApi.Endpoints
         {
             APIResponse response = new() { IsSuccess = false, StatusCode = HttpStatusCode.BadRequest };
             var delivery = _mapper.Map<Delivery>(model);
-            await _deliveryRepo.CreactAsync(delivery);
+            await _deliveryRepo.CreateAsync(delivery);
             await _deliveryRepo.SaveAsync();
             response.Result = delivery;
             response.IsSuccess = true;

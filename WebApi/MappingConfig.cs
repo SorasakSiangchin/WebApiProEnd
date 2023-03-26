@@ -6,6 +6,7 @@ using WebApi.Models.DTOS.Delivery;
 using WebApi.Models.DTOS.DetailProduct;
 using WebApi.Models.DTOS.EvidenceMoneyTransfer;
 using WebApi.Models.DTOS.Order;
+using WebApi.Models.DTOS.OrderMessage;
 using WebApi.Models.DTOS.Review;
 using WebApi.Models.DTOS.StatusDelivery;
 using WebApi.Models.OrderAggregate;
@@ -34,7 +35,10 @@ namespace WebApiProjectEnd
             CreateMap<Account, GoogleLoginRequestDTO>().ReverseMap();
             CreateMap<Account, AccountDTO>().ReverseMap();
             CreateMap<AccountResponse, AccountDTO>().ReverseMap();
+
             CreateMap<Product, ProductRequest>().ReverseMap();
+            CreateMap<Product, ProductDTO>().ReverseMap();
+
             CreateMap<ImageProduct, ImageProductDTO>().ReverseMap();
             CreateMap<Address, CreateAddressDTO>().ReverseMap();
             CreateMap<AddressDTO, UpdateAddressDTO>().ReverseMap();
@@ -53,6 +57,8 @@ namespace WebApiProjectEnd
 
             CreateMap<StatusDelivery, StatusDeliveryDTO>().ReverseMap();
             CreateMap<Review, ReviewRequestDTO>().ReverseMap();
+
+            CreateMap<OrderMessage , OrderMessageRequest>().ReverseMap();
         }
     }
 }

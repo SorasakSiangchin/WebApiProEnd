@@ -73,14 +73,19 @@ namespace WebApi.Repositorys
         public async Task<(string errorVedio, string vedioName)> UploadVedio(IFormFileCollection formFiles)
         {
             var errorMessage = string.Empty;
-            var imageName = string.Empty;
-            if (_uploadFileRepo.IsUpload(formFiles))
+            var vedioName = string.Empty;
+            if (formFiles?.Count() > 0)
             {
-                errorMessage = _uploadFileRepo.Validation(formFiles);
-                if (string.IsNullOrEmpty(errorMessage))
-                    imageName = (await _uploadFileRepo.UploadFile(formFiles, "reviewVdo"))[0];
+                if (formFiles[0].ContentType != "video/mp4") return (errorMessage, vedioName);
+                if (_uploadFileRepo.IsUpload(formFiles))
+                {
+                    errorMessage = _uploadFileRepo.Validation(formFiles);
+                    if (string.IsNullOrEmpty(errorMessage))
+                        vedioName = (await _uploadFileRepo.UploadFile(formFiles, "reviewVdo"))[0];
+                }
+                return (errorMessage, vedioName);
             }
-            return (errorMessage, imageName);
+            return (errorMessage, vedioName);
         }
 
         private async Task<List<string>> UploadFileReview(List<IFormFile> formFiles, string key)
@@ -117,5 +122,12 @@ namespace WebApi.Repositorys
         }
 
         public bool ValidationSize(long fileSize) => _configuration.GetValue<long>("FileSizeLimit") > fileSize;
+
+        public async Task<ReviewDTO> GetByOrderItemId(int id)
+        {
+            return await _db.Reviews
+                .ProjectReviewToReviewDTO(_db)
+                .FirstOrDefaultAsync(e => e.OrderItemID.Equals(id));
+        }
     }
 }

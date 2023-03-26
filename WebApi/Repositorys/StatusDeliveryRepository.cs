@@ -13,7 +13,7 @@ namespace WebApi.Repositorys
             _db = db;
         }
 
-        public async Task CreactAsync(StatusDelivery statusDelivery)
+        public async Task CreateAsync(StatusDelivery statusDelivery)
         {
            await _db.AddAsync(statusDelivery);
         }

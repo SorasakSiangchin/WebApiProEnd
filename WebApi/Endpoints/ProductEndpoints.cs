@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using System.Net;
 using WebApi.Extenstions;
 using WebApi.Models;
-using WebApi.Modes;
 using WebApi.Modes.DTOS.Product;
 using WebApi.RequestHelpers;
 using WebApiProjectEnd.Repositorys.IRepositorys;
@@ -15,7 +15,7 @@ namespace WebApiProjectEnd.Endpoints
     {
         public static void ConfigureProductEndpoints(this WebApplication app)
         {
-            app.MapPost("/products", GetAllProduct).WithName("GetProducts").Accepts<PaginationParams>("application/json").Produces<APIResponse>(200);
+            app.MapPost("/products", GetAllProduct).WithName("GetProducts").Accepts<ProductParams>("application/json").Produces<APIResponse>(200);
             app.MapGet("/product/{id}", GetProduct).WithName("GetProduct").Produces<APIResponse>(200);
             app.MapGet("/product/accountId", GetProductByAccountId).WithName("GetProductByAccountId").Produces<APIResponse>(200);
             app.MapPost("/product", CreateProduct).WithName("CreateProduct").Accepts<ProductRequest>("multipart/form-data").Produces<APIResponse>(200).Produces(400);
@@ -31,12 +31,12 @@ namespace WebApiProjectEnd.Endpoints
             APIResponse response = new();
 
             var query = await _productRepo.GetAllAsync(productParams);
-            var products = await PagedList<Product>.ToPagedList(query,
+            var products = await PagedList<ProductDTO>.ToPagedList(query,
                           productParams.PageNumber, productParams.PageSize);
 
             httpResponse.AddPaginationHeader(products.MetaData);
 
-            response.Result = products.Select(ProductResponse.FromProduct);
+            response.Result = products;
             response.IsSuccess = true;
             response.StatusCode = HttpStatusCode.OK;
             return Results.Ok(response);
@@ -46,7 +46,7 @@ namespace WebApiProjectEnd.Endpoints
         {
             APIResponse response = new();
             var products = await _productRepo.GetRecommendAsync(num);
-            response.Result = products.Select(ProductResponse.FromProduct);
+            response.Result = products;
             response.IsSuccess = true;
             response.StatusCode = HttpStatusCode.OK;
             return Results.Ok(response);
@@ -55,7 +55,7 @@ namespace WebApiProjectEnd.Endpoints
         {
             APIResponse response = new();
             var products = await _productRepo.GetRareAsync();
-            response.Result = products.Select(ProductResponse.FromProduct);
+            response.Result = products;
             response.IsSuccess = true;
             response.StatusCode = HttpStatusCode.OK;
             return Results.Ok(response);
@@ -65,7 +65,7 @@ namespace WebApiProjectEnd.Endpoints
             APIResponse response = new();
             var data = await _productRepo.GetAsync(id);
             if (data == null) return Results.Ok("ไม่มีข้อมูล");
-            response.Result = ProductResponse.FromProduct(data);
+            response.Result = data;
             response.IsSuccess = true;
             response.StatusCode = HttpStatusCode.OK;
             return Results.Ok(response);
@@ -92,7 +92,7 @@ namespace WebApiProjectEnd.Endpoints
             var product = _mapper.Map<Product>(model);
             product.ImageUrl = imageName;
             product.Created = DateTime.Now;
-            await _productRepo.CreactAsync(product);
+            await _productRepo.CreateAsync(product);
             await _productRepo.SaveAsync();
             response.Result = product;
             response.IsSuccess = true;
@@ -100,10 +100,10 @@ namespace WebApiProjectEnd.Endpoints
             return Results.Ok(response);
         }
 
-        private async static Task<IResult> UpdateProduct(IMapper _mapper, IProductRepository _productRepo, ProductRequest model)
+        private async static Task<IResult> UpdateProduct(ApplicationDbContext db ,IMapper _mapper, IProductRepository _productRepo, ProductRequest model)
         {
             APIResponse response = new() { IsSuccess = false, StatusCode = HttpStatusCode.BadRequest };
-            var product = await _productRepo.GetAsync(model.Id, tracked: false);
+            var product = await db.Products.AsNoTracking().FirstOrDefaultAsync(e => e.Id.Equals(model.Id));
             if (product == null) return Results.NotFound();
             #region จัดการรูปภาพ
             (string erorrMesage, string imageName) = await _productRepo.UploadImage(model.FormFiles);
@@ -130,14 +130,15 @@ namespace WebApiProjectEnd.Endpoints
             return Results.Ok(response);
         }
 
-        private async static Task<IResult> DeleteProduct(IProductRepository _productRepo, string id)
+        private async static Task<IResult> DeleteProduct(IMapper _mapper , IProductRepository _productRepo, string id)
         {
             APIResponse response = new() { IsSuccess = false, StatusCode = HttpStatusCode.BadRequest };
             var product = await _productRepo.GetAsync(id);
+
             if (product != null)
             {
                 await _productRepo.DeleteImage(product.ImageUrl);
-                await _productRepo.RemoveAsync(product);
+                await _productRepo.RemoveAsync(_mapper.Map<Product>(product));
                 await _productRepo.SaveAsync();
                 response.IsSuccess = true;
                 response.StatusCode = HttpStatusCode.NoContent;
@@ -154,7 +155,7 @@ namespace WebApiProjectEnd.Endpoints
             APIResponse response = new();
             var data = await _productRepo.GetAsyncByNameAsync(name);
             if (data == null) return Results.Ok("ไม่มีข้อมูล");
-            response.Result = data.Select(ProductResponse.FromProduct);
+            response.Result = data;
             response.IsSuccess = true;
             response.StatusCode = HttpStatusCode.OK;
             return Results.Ok(response);
@@ -164,7 +165,7 @@ namespace WebApiProjectEnd.Endpoints
         {
             APIResponse response = new();
             var data = await _productRepo.GetProductByAccountIdAsync(accountId);
-            response.Result = data.Select(ProductResponse.FromProduct);
+            response.Result = data;
             response.IsSuccess = true;
             response.StatusCode = HttpStatusCode.OK;
             return Results.Ok(response);

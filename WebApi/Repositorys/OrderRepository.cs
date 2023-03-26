@@ -1,12 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Stripe;
 using WebApi.Extenstions;
 using WebApi.Models;
-using WebApi.Models.OrderAggregate;
 using WebApi.Modes.CartAggregate;
 using WebApi.Modes.DTOS.Order;
 using WebApi.Repositorys.IRepositorys;
 using WebApi.RequestHelpers;
 using WebApiProjectEnd.Repositorys.IRepositorys;
+using Order = WebApi.Models.OrderAggregate.Order;
+using OrderItem = WebApi.Models.OrderAggregate.OrderItem;
+using PaymentMethod = WebApi.Models.OrderAggregate.PaymentMethod;
 
 namespace WebApi.Repositorys
 {
@@ -15,54 +18,80 @@ namespace WebApi.Repositorys
         private readonly ApplicationDbContext _db;
         private readonly IProductRepository _productRepo;
         private readonly ICartRepository _cartRepo;
+        private readonly IConfiguration _config;
 
-        public OrderRepository(ApplicationDbContext db, IProductRepository productRepo, ICartRepository cartRepo)
+        public OrderRepository(
+            ApplicationDbContext db,
+            IProductRepository productRepo,
+            ICartRepository cartRepo,
+            IConfiguration config 
+        )
         {
             _db = db;
             _productRepo = productRepo;
             _cartRepo = cartRepo;
+            _config = config;
         }
 
-        public async Task CreactAsync(CreateOrderDTO createOrder)
+
+        //การสั่งจองกับการสั่งซื้อจะใช้ method เดียวกัน
+        public async Task CreateAsync(CreateOrderDTO createOrder)
         {
             List<OrderItem> orderItems = new();
-            var cart = await _cartRepo.GetCartAsync(createOrder.CartID);
-            foreach (var accountId in createOrder.AccountIdFromProduct)
+            if (createOrder.AccountIdFromProduct?.Count() > 0)
             {
-                Order order = new()
+                foreach (var accountId in createOrder.AccountIdFromProduct)
                 {
-                    Id = GenerateID(),
-                    Created = DateTime.Now ,
-                    AddressID = createOrder.AddressID,
-                    CustomerStatus = false,
-                    Subtotal = 0,
-                    DeliveryFee = 0,
-                    SellerStatus = false,
-                    OrderCancel = false,
-                };
-                foreach (var item in createOrder.OrderItems)
-                {
-                    var product = await _productRepo.GetAsync(item.ItemOrdered.ProductID);
-                    product.Stock -= item.Amount;
-                    if (product.AccountID == accountId) orderItems.Add(new OrderItem
+                    Order order = new()
                     {
-                        Amount = item.Amount,
-                        OrderID = order.Id,
-                        ItemOrdered = item.ItemOrdered,
-                        Price = item.Price,
+                        Id = GenerateID(),
+                        Created = DateTime.Now,
+                        AddressID = createOrder.AddressID,
+                        CustomerStatus = false,
+                        PaymentMethod = createOrder.PaymentMethod,
+                        Subtotal = 0,
+                        DeliveryFee = 0,
+                        SellerStatus = false,
+                        OrderCancel = false,
+                        OrderUsage = createOrder.OrderUsage,
+                        //OrderStatus = createOrder.PaymentMethod == PaymentMethod.CreditCard ? OrderStatus.SuccessfulPayment : OrderStatus.WaitingForPayment
+                    };
 
-                    });
-                }
-                var subtotal = orderItems.Sum(item => item.Price * item.Amount);
-                var deliveryFee = subtotal > 10000 ? 0 : 500;
-                order.Subtotal = subtotal;
-                order.DeliveryFee = deliveryFee;
+                    foreach (var item in createOrder.OrderItems)
+                    {
+                        var product = await _productRepo.GetAsync(item.ItemOrdered.ProductID);
+                        product.Stock -= item.Amount;
+                        if (product.AccountID == accountId) orderItems.Add(new OrderItem
+                        {
+                            Amount = item.Amount,
+                            OrderID = order.Id,
+                            ItemOrdered = item.ItemOrdered,
+                            Price = item.Price,
 
-                await _db.AddAsync(order);
-                await _db.AddRangeAsync(orderItems);
-                for (int i = 0; i < orderItems.Count; i++) orderItems.Remove(orderItems[i]);
+                        });
+                    }
+                    var subtotal = orderItems.Sum(item => item.Price * item.Amount);
+                    var deliveryFee = subtotal > 10000 ? 0 : 500;
+                    order.Subtotal = subtotal;
+                    order.DeliveryFee = deliveryFee;
+                    if (createOrder.PaymentMethod == PaymentMethod.CreditCard)
+                    {
+                        var intent = await CreatePaymentIntent(order);
+                        if (!string.IsNullOrEmpty(intent.Id))
+                        {
+                            order.PaymentIntentId = intent.Id; // เอาใบส่งของใส่ในใบสั่งซื้อ
+                            order.ClientSecret = intent.ClientSecret; // เอารหัสลับใส่ในใบสั่งซื้อ
+                        };
+                    };
+                    await _db.AddAsync(order);
+                    await _db.AddRangeAsync(orderItems);
+                    for (int i = 0; i < orderItems.Count; i++) orderItems.Remove(orderItems[i]);
+                };
             }
-            _db.Remove(cart);
+
+            if (!string.IsNullOrEmpty(createOrder.CartID))
+                _db.Remove(await _cartRepo.GetCartAsync(createOrder.CartID));
+
             await _db.SaveChangesAsync();
         }
 
@@ -126,8 +155,11 @@ namespace WebApi.Repositorys
               .ByAccountID(orderParams.AccountId)
               .FilterCancel(orderParams.OrderCancel)
               .FilterStatus(orderParams.OrderStatus)
+              .FilterOrderUsage(orderParams.OrderUsage)
+              .HaveEvidence(orderParams.HaveEvidence)
               .ProjectOrderToOrderDTO(_db)
               .ToListAsync();
+
             if (!string.IsNullOrEmpty(orderParams.SellerId))
             {
                 List<OrderDTO> ordersDTO = new();
@@ -137,9 +169,31 @@ namespace WebApi.Repositorys
                     if (items.Count() > 0) ordersDTO.Add(order);
                 }
                 return ordersDTO;
-            }
+            };
 
             return orders;
         }
+
+        private async Task<PaymentIntent> CreatePaymentIntent(Order order)
+        {
+            StripeConfiguration.ApiKey = _config["StripeSettings:SecretKey"];
+            var service = new PaymentIntentService();
+            var intent = new PaymentIntent();
+
+            //สร้างรายการใหม่
+            if (string.IsNullOrEmpty(order.PaymentIntentId))
+            {
+                var options = new PaymentIntentCreateOptions
+                {
+                    Amount = (order.Subtotal + order.DeliveryFee) * 100, // ยอดเงินเท่าไร
+                    Currency = "THB", // สกุลเงิน
+                    PaymentMethodTypes = new List<string> { "card" } // วิธีการจ่าย
+                };
+                intent = await service.CreateAsync(options); // รหัสใบส่งของ
+            };
+
+            return intent; // ส่งใบส่งของออกไป
+        }
+
     }
 }

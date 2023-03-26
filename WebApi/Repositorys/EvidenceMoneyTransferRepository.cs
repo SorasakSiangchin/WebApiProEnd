@@ -17,12 +17,12 @@ namespace WebApi.Repositorys
             _uploadFile = uploadFile;
         }
 
-        public async Task CreateAsync(EvidenceMoneyTransfer evidenceMoneyTransfer)
+        public async Task CreateAsync(EvidenceMoneyTransfer entity)
         {
-            var order = await _db.Orders.AsNoTracking().FirstOrDefaultAsync(e => e.Id == evidenceMoneyTransfer.OrderID);
+            var order = await _db.Orders.AsNoTracking().FirstOrDefaultAsync(e => e.Id == entity.OrderID);
             order.OrderStatus = OrderStatus.PendingApproval;
-            await _db.AddAsync(evidenceMoneyTransfer);
-             _db.Update(order);
+            await _db.AddAsync(entity);
+            _db.Update(order);
         }
 
         public async Task SaveAsync() => await _db.SaveChangesAsync();
@@ -30,11 +30,9 @@ namespace WebApi.Repositorys
         public async Task<EvidenceMoneyTransferDTO> GetByOrderIdAsync(string orderId, bool tracked = true)
         {
             IQueryable<EvidenceMoneyTransfer> query = _db.EvidenceMoneyTransfers;
-           
-            if (!tracked)
-            {
-                query = query.AsNoTracking();
-            }
+
+            if (!tracked) query = query.AsNoTracking();
+
             return await query
                 .Where(x => x.OrderID == orderId && x.Status == true)
                 .ProjectEvidenceMoneyTransferToEvidenceMoneyTransferDto(_db)
@@ -78,5 +76,11 @@ namespace WebApi.Repositorys
         }
 
         public async Task UpdateAsync(EvidenceMoneyTransfer evidenceMoneyTransfer) => _db.Update(evidenceMoneyTransfer);
+
+        public Task RemoveAsync(EvidenceMoneyTransfer entity)
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }

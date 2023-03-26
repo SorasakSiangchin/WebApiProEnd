@@ -12,5 +12,7 @@ namespace WebApi.Models.DTOS.Order
         public bool OrderCancel { get; set; }
         public int OrderStatus { get; set; }
         public int AddressID { get; set; }
+        public OrderUsage OrderUsage { get; set; }
+
     }
 }

@@ -15,6 +15,8 @@ namespace WebApi.Models
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
+            //optionsBuilder.UseSqlServer("Server=tee.kru.ac.th;Database=project-end-api;User Id=student;Password=Cs@2700;MultipleActiveResultSets=true;TrustServerCertificate=True");
+            //optionsBuilder.UseSqlServer("Server=10.103.0.16,1433;Database=project-end-api;User Id=student;Password=Cs@2700;MultipleActiveResultSets=true;TrustServerCertificate=True");
             optionsBuilder.UseSqlServer("Server=DESKTOP-6TJ4MKL;Database=project-end-api;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True");
             //optionsBuilder.UseSqlite("Data Source=project-end-api.db");
         }
@@ -37,8 +39,9 @@ namespace WebApi.Models
         public DbSet<Review> Reviews { get; set; }
         public DbSet<StatusDelivery> StatusDeliverys { get; set; }
         public DbSet<WeightUnit> WeightUnits { get; set; }
+        public DbSet<OrderMessage> OrderMessages { get; set; }
         public DbSet<ImageProduct> ImageProducts { get; set; }
-        //สร้างข้อมูลเริ่มต้นให้กับ Role
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -52,13 +55,25 @@ namespace WebApi.Models
 
             builder.Entity<CategoryProduct>()
             .HasData(
-                new CategoryProduct { Id = 2, Name = "category-01" },
-                new CategoryProduct { Id = 3, Name = "category-02" },
-                new CategoryProduct { Id = 999, Name = "rare" }
+                new CategoryProduct { Id = 2, Name = "มังคุด" },
+                new CategoryProduct { Id = 3, Name = "ลำไย" },
+                new CategoryProduct { Id = 4, Name = "ทุเรียน" },
+                new CategoryProduct { Id = 5, Name = "เงาะ" },
+                new CategoryProduct { Id = 6, Name = "มะม่วง" },
+                new CategoryProduct { Id = 7, Name = "กล้วย" },
+                new CategoryProduct { Id = 999, Name = "หายาก" }
             );
+            builder.Entity<StatusDelivery>()
+            .HasData(
+                new StatusDelivery { Id = 1, Name = "กำลังเตรียมพัสดุ" },
+                new StatusDelivery { Id = 2, Name = "บริษัทขนส่งเข้ารับพัสดุเรียบร้อยแล้ว" },
+                new StatusDelivery { Id = 3, Name = "พัสดุถึงศูนย์คัดแยกสินค้า" },
+                new StatusDelivery { Id = 4, Name = "พัสดุออกจากศูนย์คัดแยกสินค้า" },
+                new StatusDelivery { Id = 5, Name = "พัสดุถึงสาขาปลายทาง" },
+                new StatusDelivery { Id = 999, Name = "การจัดส่งสำเร็จ" }
+               );
             builder.Entity<WeightUnit>()
             .HasData(
-
                 new WeightUnit { Id = 1, Name = "ลูก" },
                 new WeightUnit { Id = 2, Name = "กิโลกรัม" }
             );

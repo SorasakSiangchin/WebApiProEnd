@@ -6,7 +6,7 @@ namespace WebApi.Repositorys.IRepositorys
     {
         Task<DeliveryDTO> GetByOrderId(string orderId);
         Task<DeliveryDTO> GetAsync(int id, bool tracked = true);
-        Task CreactAsync(Delivery delivery);
+        Task CreateAsync(Delivery delivery);
         Task UpdateAsync(Delivery delivery);
         Task SaveAsync();
     }

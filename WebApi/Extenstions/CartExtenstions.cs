@@ -30,7 +30,7 @@ namespace WebApi.Extenstions
 
         public static IQueryable<Cart> RetrieveBasketWithItems(this IQueryable<Cart> query, string accountId)
         {
-            return query.Include(i => i.Items).ThenInclude(p => p.Product).Where(b => b.AccountID == accountId);
+            return query.Include(i => i.Items).ThenInclude(p => p.Product).ThenInclude(j => j.CategoryProduct).Where(b => b.AccountID == accountId);
         }
     }
 }

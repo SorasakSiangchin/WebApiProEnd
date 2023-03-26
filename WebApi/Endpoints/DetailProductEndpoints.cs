@@ -29,7 +29,7 @@ namespace WebApi.Endpoints
         {
             APIResponse response = new() { IsSuccess = false, StatusCode = HttpStatusCode.BadRequest };
             var detailProduct = _mapper.Map<DetailProduct>(model);
-            await _detailProductRepo.CreactAsync(detailProduct);
+            await _detailProductRepo.CreateAsync(detailProduct);
             await _detailProductRepo.SaveAsync();
             response.Result = detailProduct;
             response.IsSuccess = true;

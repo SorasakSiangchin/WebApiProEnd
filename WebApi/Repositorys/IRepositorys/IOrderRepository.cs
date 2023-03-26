@@ -11,7 +11,7 @@ namespace WebApi.Repositorys.IRepositorys
         Task<ICollection<OrderDTO>> GetAllAsync(OrderParams orderParams);
         Task<List<string>> GetAccountIdAsync(int[] cartItemId  , string cartId);
         Task<OrderDTO> GetAsync(string Id);
-        Task CreactAsync(CreateOrderDTO createOrder);
+        Task CreateAsync(CreateOrderDTO createOrder);
         Task UpdateAsync(Order order);
     }
 }

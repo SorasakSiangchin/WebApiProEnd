@@ -1,10 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebApi.Models;
-using WebApi.Models.DTOS.Product;
-using WebApi.Models.OrderAggregate;
 using WebApi.Modes;
-using WebApi.Modes.DTOS.Order;
-using WebApi.Modes.DTOS.Product;
 using WebApi.Settings;
 
 namespace WebApi.Extenstions
@@ -53,6 +49,7 @@ namespace WebApi.Extenstions
                 {
                     Id = product.Id,
                     AccountID = product.AccountID,
+                    Account = db.Accounts.ProjectAccountToAccountDTO(db).FirstOrDefault(e => e.Id.Equals(product.AccountID)),
                     CategoryProduct = product.CategoryProduct,
                     CategoryProductID = product.CategoryProductID,
                     Color = product.Color,
@@ -67,9 +64,22 @@ namespace WebApi.Extenstions
                     Stock = product.Stock,
                     Weight = product.Weight,
                     WeightUnit = product.WeightUnit,
-                    WeightUnitID = product.WeightUnitID ,
-                    ImageProducts = db.ImageProducts.Where(e => e.ProductID == product.Id).Select(ImageProductResponse.FromImageProduct).ToList(),
+                    WeightUnitID = product.WeightUnitID,
+                    AverageScore = GetAverageScore(product.Id, db),
+                    ImageProducts = db.ImageProducts.Where(e => e.ProductID == product.Id).Select(image => ImageProductResponse.FromImageProduct(image)).ToList(),
                 }).AsNoTracking();
+        }
+
+        private static double GetAverageScore(string? productId, ApplicationDbContext db)
+        {
+            var reviews = db.Reviews.ByProductID(productId).ToList();
+            double averageScore = 0;
+            if (reviews?.Count > 0)
+            {
+                var sumScore = reviews.Sum(e => e.Score);
+                averageScore = sumScore / reviews.Count();
+            }
+            return averageScore;
         }
     }
 }

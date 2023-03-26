@@ -22,10 +22,11 @@ namespace WebApi.Extenstions
 
         public static IQueryable<Order> RangeTime(this IQueryable<Order> query, DateTime? DateStart, DateTime? DateEnd)
         {
-            if (DateStart.Value.Date.ToString() == "1/1/0544 0:00:00" || DateEnd.Value.Date.ToString() == "1/1/0544 0:00:00") return query;
-
-            Console.WriteLine(DateStart.Value.Date);
-            query = query.Where(p => p.Created.Date >= DateStart.Value.Date && p.Created.Date <= DateEnd.Value.Date);
+            // 1/1/0544 0:00:00
+            //if (DateStart.Value.Date.ToString() == "1/1/0001 00:00:00.0000000" || DateEnd.Value.Date.ToString() == "1/1/0001 00:00:00.0000000") return query;
+            //if (DateStart.Value.Date.ToString() == "1/1/0544 0:00:00" || DateEnd.Value.Date.ToString() == "1/1/0544 0:00:00") return query;
+            //Console.WriteLine(DateStart.Value.Date);
+            //query = query.Where(p => p.Created.Date >= DateStart.Value.Date && p.Created.Date <= DateEnd.Value.Date);
             return query;
         }
 

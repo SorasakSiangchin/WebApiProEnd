@@ -15,7 +15,7 @@ namespace WebApi.Repositorys
             _uploadFile = uploadFile;
         }
 
-        public async Task CreactAsync(ImageProduct imageProduct, List<string> imageName)
+        public async Task CreateAsync(ImageProduct imageProduct, List<string> imageName)
         {
             for (var i = 0; i < imageName.Count(); i++)
             {

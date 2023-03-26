@@ -1,8 +1,5 @@
 ﻿using AutoMapper;
-using Mapster;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.Win32;
 using System.Net;
 using WebApi.Extenstions;
 using WebApi.Models;
@@ -10,8 +7,6 @@ using WebApi.Models.DTOS.Account;
 using WebApi.Modes;
 using WebApi.Repositorys.IRepositorys;
 using WebApi.RequestHelpers;
-using WebApi.Settings;
-using WebApiProjectEnd.Modes;
 using WebApiProjectEnd.Modes.DTOS.Accounts;
 using WebApiProjectEnd.Repositorys.IRepositorys;
 

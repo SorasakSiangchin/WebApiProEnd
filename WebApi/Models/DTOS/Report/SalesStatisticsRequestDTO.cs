@@ -7,7 +7,6 @@ namespace WebApi.Models.DTOS.Report
     {
         public string AccountId { get; set; }
         public DateTime? Year { get; set; } = null;
-
         public static ValueTask<SalesStatisticsRequestDTO?> BindAsync(HttpContext context,
                                                    ParameterInfo parameter)
         {

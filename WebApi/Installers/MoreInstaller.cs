@@ -7,7 +7,7 @@ namespace WebApiProjectEnd.Installers
         public void InstallServices(WebApplicationBuilder builder)
         {
             builder.Services.AddAutoMapper(typeof(MappingConfig));
-            
+
         }
     }
 }

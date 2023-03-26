@@ -72,13 +72,13 @@ app.ConfigureReportEndpoints();
 app.ConfigureDeliveryEndpoints();
 app.ConfigureStatusDeliveryEndpoints();
 app.ConfigureReviewEndpoints();
+app.ConfigureOrderMessageEndpoints();
 
-//app.UseEndpoints(endpoints =>
-//{
-//    endpoints.MapControllers();
-//    endpoints.MapFallbackToController("Index", "Fallback"); // บอกเส้นทางมันก่อน
-//});
-
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+    endpoints.MapFallbackToController("Index", "Fallback"); // บอกเส้นทางมันก่อน
+});
 
 app.Run();
 

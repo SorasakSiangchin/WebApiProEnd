@@ -1,7 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using WebApi.Modes;
+﻿using WebApi.Modes;
+using WebApiProjectEnd.Modes.DTOS.Accounts;
 
-namespace WebApi.Models.DTOS.Product
+namespace WebApi.Models
 {
     public class ProductDTO
     {
@@ -23,5 +23,7 @@ namespace WebApi.Models.DTOS.Product
         public CategoryProduct CategoryProduct { get; set; }
         public LevelProduct LevelProduct { get; set; }
         public List<ImageProductResponse> ImageProducts { get; set; }
+        public AccountDTO Account {get; set;}
+        public double AverageScore { set; get; }
     }
 }

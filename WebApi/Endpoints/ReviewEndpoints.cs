@@ -14,6 +14,7 @@ namespace WebApi.Endpoints
     {
         public static void ConfigureReviewEndpoints(this WebApplication app)
         {
+            app.MapGet("review/orderItemId", GetReviewByOrderItemId).WithName("GetReviewByOrderItemId").Produces<APIResponse>(200);
             app.MapPost("review/productId", GetReviewByProductId).WithName("GetReviewByProductId").Accepts<ReviewParams>("application/json").Produces<APIResponse>(200);
             app.MapPost("review", CreateReview).WithName("CreateReview").Accepts<ReviewRequestDTO>("multipart/form-data").Produces<APIResponse>(200).Produces(400);
         }
@@ -54,6 +55,16 @@ namespace WebApi.Endpoints
                         reviewParams.PageNumber, reviewParams.PageSize);
             httpResponse.AddPaginationHeader(reviews.MetaData);
             response.Result = new ReviewAverageDTO { AverageScore = query.AverageScore, Reviews = reviews };
+            response.IsSuccess = true;
+            response.StatusCode = HttpStatusCode.OK;
+            return Results.Ok(response);
+        }
+
+        private async static Task<IResult> GetReviewByOrderItemId(IReviewRepository _reviewRepo,int orderItemId )
+        {
+            APIResponse response = new();
+            var query = _reviewRepo.GetByOrderItemId(orderItemId).GetAwaiter().GetResult();
+            response.Result = query ;
             response.IsSuccess = true;
             response.StatusCode = HttpStatusCode.OK;
             return Results.Ok(response);

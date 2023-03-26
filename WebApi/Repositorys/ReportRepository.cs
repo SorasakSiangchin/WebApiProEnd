@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using WebApi.Extenstions;
 using WebApi.Models;
 using WebApi.Models.DTOS.Report;
@@ -16,7 +17,6 @@ namespace WebApi.Repositorys
         public ReportRepository(ApplicationDbContext db, IProductRepository productRepo)
         {
             _db = db;
-            _productRepo = productRepo;
         }
 
         public async Task<List<ProductStatisticsDTO>> ProductStatistics(ProductStatisticsRequestDTO requestDTO)
@@ -34,12 +34,12 @@ namespace WebApi.Repositorys
                 {
                     foreach (var item in order.OrderItems)
                     {
-                        var product = await _productRepo.GetAsync(item.ProductID, tracked: false);
+                        var product = await _db.Products.Include(e => e.CategoryProduct).AsNoTracking().FirstOrDefaultAsync(e => e.Id.Equals(item.ProductID));
                         if (product != null)
                         {
                             var productStatistic = ProductStatistics.FirstOrDefault(e => e.Product.Id.Equals(product.Id));
                             if (productStatistic != null) productStatistic.Amount += item.Amount;
-                            else ProductStatistics.Add(new ProductStatisticsDTO { Product = product, Amount = item.Amount });
+                            else ProductStatistics.Add(new ProductStatisticsDTO { Product = product , Amount = item.Amount });
 
                         }
                     };
@@ -65,8 +65,6 @@ namespace WebApi.Repositorys
                 var items = order.OrderItems.Where(e => e.AccountID == requestDTO.AccountId);
                 if (items.Count() > 0)
                 {
-                    
-                    
                     var result = SalesStatistics.Sales.Find(x => x.Month == order.Created.Value.Month && x.Year == order.Created.Value.Year);
                     if (result == null)
                     {

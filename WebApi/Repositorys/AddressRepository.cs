@@ -16,7 +16,7 @@ namespace WebApi.Repositorys
         {
             _db = db;
         }
-        public async Task CreactAsync(Address address)
+        public async Task CreateAsync(Address address)
         {
             await _db.AddAsync(address);
             await _db.SaveChangesAsync();
