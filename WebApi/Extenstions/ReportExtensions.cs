@@ -1,4 +1,5 @@
-﻿using WebApi.Models;
+﻿using Microsoft.IdentityModel.Tokens;
+using WebApi.Models;
 using WebApi.Models.OrderAggregate;
 
 namespace WebApi.Extenstions
@@ -20,13 +21,13 @@ namespace WebApi.Extenstions
             return Order.AsQueryable();
         }
 
-        public static IQueryable<Order> RangeTime(this IQueryable<Order> query, DateTime? DateStart, DateTime? DateEnd)
+        public static IQueryable<Order> RangeTime(this IQueryable<Order> query, string DateStart, string DateEnd)
         {
             // 1/1/0544 0:00:00
-            //if (DateStart.Value.Date.ToString() == "1/1/0001 00:00:00.0000000" || DateEnd.Value.Date.ToString() == "1/1/0001 00:00:00.0000000") return query;
+            if (string.IsNullOrEmpty(DateStart) || string.IsNullOrEmpty(DateEnd)) return query;
             //if (DateStart.Value.Date.ToString() == "1/1/0544 0:00:00" || DateEnd.Value.Date.ToString() == "1/1/0544 0:00:00") return query;
             //Console.WriteLine(DateStart.Value.Date);
-            //query = query.Where(p => p.Created.Date >= DateStart.Value.Date && p.Created.Date <= DateEnd.Value.Date);
+            query = query.Where(p => p.Created.Date >= Convert.ToDateTime(DateStart) && p.Created.Date <= Convert.ToDateTime(DateEnd));
             return query;
         }
 

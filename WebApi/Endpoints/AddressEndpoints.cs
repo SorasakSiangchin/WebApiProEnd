@@ -14,9 +14,9 @@ namespace WebApi.Endpoints
             app.MapGet("addresses", GetAllAddresses).WithName("GetAllAddresses").Produces<APIResponse>(200);
             app.MapGet("address/{id:int}", GetAddress).WithName("GetAddress").Produces<APIResponse>(200);
             app.MapPost("address", CreateAddress).WithName("CreateAddress").Accepts<CreateAddressDTO>("application/json").Produces<APIResponse>(200).Produces(400); 
-            app.MapPut("address", UpdateAddress).WithName("UpdateAddress").Accepts<UpdateAddressDTO>("application/json").Produces<APIResponse>(200).Produces(400);
-            app.MapPut("address/status", UpdateStatusAddress).WithName("UpdateStatusAddress").Accepts<UpdateAddressDTO>("application/json").Produces<APIResponse>(200).Produces(400);
-            app.MapDelete("address/{id:int}", DeleteAddress).WithName("DeleteAddress").Produces<APIResponse>(200).Produces(400);
+            app.MapPost("address/put", UpdateAddress).WithName("UpdateAddress").Accepts<UpdateAddressDTO>("application/json").Produces<APIResponse>(200).Produces(400);
+            app.MapPost("address/status/put", UpdateStatusAddress).WithName("UpdateStatusAddress").Accepts<UpdateAddressDTO>("application/json").Produces<APIResponse>(200).Produces(400);
+            app.MapPost("address/{id:int}", DeleteAddress).WithName("DeleteAddress").Produces<APIResponse>(200).Produces(400);
         }
 
         private static async Task<IResult> GetAllAddresses(IAddressRepository _addressRepo , string accountId)

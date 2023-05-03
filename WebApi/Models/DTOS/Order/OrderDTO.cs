@@ -24,5 +24,6 @@ namespace WebApi.Models
         public Address Address { get; set; }
         public EvidenceMoneyTransfer evidenceMoney { get; set; }
         public List<OrderMessageDTO> orderMessage { get; set; }
+        public long GetTotal() => Subtotal + DeliveryFee;
     }
 }

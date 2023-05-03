@@ -61,6 +61,15 @@ namespace WebApi.Models
                 new CategoryProduct { Id = 5, Name = "เงาะ" },
                 new CategoryProduct { Id = 6, Name = "มะม่วง" },
                 new CategoryProduct { Id = 7, Name = "กล้วย" },
+                new CategoryProduct { Id = 8, Name = "มะพร้าว" },
+                new CategoryProduct { Id = 9, Name = "ขนุน" },
+                new CategoryProduct { Id = 10, Name = "หมาก" },
+                new CategoryProduct { Id = 11, Name = "มะละกอ" },
+                new CategoryProduct { Id = 12, Name = "น้อยหน่า" },
+                new CategoryProduct { Id = 13, Name = "ลองกอง" },
+                new CategoryProduct { Id = 14, Name = "ส้ม" },
+                new CategoryProduct { Id = 15, Name = "ชมพู่" },
+                new CategoryProduct { Id = 16, Name = "ขนุน" },
                 new CategoryProduct { Id = 999, Name = "หายาก" }
             );
             builder.Entity<StatusDelivery>()

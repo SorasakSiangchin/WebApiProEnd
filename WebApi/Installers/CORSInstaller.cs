@@ -12,7 +12,13 @@ namespace WebApi.Installers
                 options.AddPolicy(name: MyAllowSpecificOrigins,
                     policy =>
                     {
-                        policy.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:5173");
+                        policy
+                        .WithOrigins("http://localhost:5173" , "http://tee.kru.ac.th" )
+                        //.AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials()
+                        ;
                     });
             });
             #endregion

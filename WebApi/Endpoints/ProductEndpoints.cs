@@ -21,9 +21,9 @@ namespace WebApiProjectEnd.Endpoints
             app.MapPost("/product", CreateProduct).WithName("CreateProduct").Accepts<ProductRequest>("multipart/form-data").Produces<APIResponse>(200).Produces(400);
             app.MapGet("/product/rare", GetProductRare).WithName("GetProductRare").Produces<APIResponse>(200);
             app.MapGet("/product/recommend", GetProductRecommend).WithName("GetProductRecommend").Produces<APIResponse>(200);
-            app.MapPut("/product", UpdateProduct).WithName("UpdateProduct").Accepts<ProductRequest>("multipart/form-data").Produces<APIResponse>(200).Produces(400).Produces(404);
+            app.MapPost("/product/put", UpdateProduct).WithName("UpdateProduct").Accepts<ProductRequest>("multipart/form-data").Produces<APIResponse>(200).Produces(400).Produces(404);
             app.MapGet("/product/name", GetProductByNames).WithName("GetProductsByName").Produces<APIResponse>(200);
-            app.MapDelete("/product/{id}", DeleteProduct);
+            app.MapPost("/product/{id}", DeleteProduct);
         }
 
         private static async Task<IResult> GetAllProduct(HttpResponse httpResponse, IProductRepository _productRepo, ProductParams productParams)

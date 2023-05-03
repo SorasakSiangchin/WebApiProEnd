@@ -12,8 +12,8 @@ namespace WebApi.Endpoints
         {
             app.MapGet("statusDeliverys", GetAllStatusDeliverys).WithName("GetAllStatusDeliverys").Produces<APIResponse>(200);
             app.MapPost("statusDelivery", CreateStatusDelivery).WithName("CreateStatusDelivery").Accepts<StatusDeliveryDTO>("application/json").Produces<APIResponse>(200).Produces(400);
-            app.MapPut("statusDelivery", UpdateStatusDelivery).WithName("UpdateStatusDelivery").Accepts<StatusDeliveryDTO>("application/json").Produces<APIResponse>(200).Produces(400).Produces(404);
-            app.MapDelete("statusDelivery/{id}", DeleteStatusDelivery);
+            app.MapPost("statusDelivery/put", UpdateStatusDelivery).WithName("UpdateStatusDelivery").Accepts<StatusDeliveryDTO>("application/json").Produces<APIResponse>(200).Produces(400).Produces(404);
+            app.MapPost("statusDelivery/{id}", DeleteStatusDelivery);
         }
 
         private static async Task<IResult> GetAllStatusDeliverys(IStatusDeliveryRepository _statusDeliveryRepo)

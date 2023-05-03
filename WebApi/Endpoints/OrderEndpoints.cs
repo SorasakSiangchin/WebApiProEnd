@@ -28,8 +28,7 @@ namespace WebApi.Endpoints
             app.MapPost("orders", GetOrderAll).WithName("GetOrderAll").Accepts<OrderParams>("application/json").Produces<APIResponse>(200);
 
             app.MapPost("order", CreatOrder).WithName("CreatOrder").Accepts<CreateOrderDTO>("application/json").Produces<APIResponse>(200);
-            app.MapPut("order", UpdateOrder).WithName("UpdateOrder").Accepts<UpdateOrderDTO>("application/json").Produces<APIResponse>(200);
-       
+            app.MapPost("order/put", UpdateOrder).WithName("UpdateOrder").Accepts<UpdateOrderDTO>("application/json").Produces<APIResponse>(200);
             app.MapPost("order/stripe/webhook", StripeWebhook).WithName("StripeWebhook").Produces<APIResponse>(200);
 
         }
@@ -74,7 +73,7 @@ namespace WebApi.Endpoints
             return Results.Ok(response);
         }
 
-        private async static Task<IResult> UpdateOrder(IMapper _mapper, IOrderRepository _orderRepo, [FromBody] UpdateOrderDTO model)
+        private async static Task<IResult> UpdateOrder(IMapper _mapper, IOrderRepository _orderRepo, UpdateOrderDTO model)
         {
             APIResponse response = new() { IsSuccess = false, StatusCode = HttpStatusCode.BadRequest };
             var order = _mapper.Map<Order>(_orderRepo.GetAsync(model.Id).GetAwaiter().GetResult());

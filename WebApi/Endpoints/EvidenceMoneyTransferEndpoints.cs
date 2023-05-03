@@ -14,7 +14,8 @@ namespace WebApi.Endpoints
             app.MapGet("evidenceMoneyTransfer/orderId", GetEvidenceMoneyTransferByOrderId).WithName("GetEvidenceMoneyTransferByOrderId").Produces<APIResponse>(200);
             app.MapGet("evidenceMoneyTransfer/cancel", GetEvidenceMoneyTransferCancel).WithName("GetEvidenceMoneyTransferCancel").Produces<APIResponse>(200);
             app.MapPost("evidenceMoneyTransfer", CreateEvidenceMoneyTransfer).WithName("CreateEvidenceMoneyTransfer").Accepts<CreateEvidenceMoneyTransferDTO>("multipart/form-data").Produces<APIResponse>(200).Produces(400).Produces(404); ;
-            app.MapPut("evidenceMoneyTransfer", UpdateEvidenceMoneyTransfer).WithName("UpdateEvidenceMoneyTransfer").Accepts<UpdateEvidenceMoneyTransferDTO>("application/json").Produces<APIResponse>(200).Produces(400); ;
+            app.MapPost("evidenceMoneyTransfer/put", UpdateEvidenceMoneyTransfer).WithName("UpdateEvidenceMoneyTransfer").Accepts<UpdateEvidenceMoneyTransferDTO>("application/json").Produces<APIResponse>(200).Produces(400); ;
+          
         }
 
         private static async Task<IResult> GetEvidenceMoneyTransferByOrderId(IMapper _mapper, IEvidenceMoneyTransferRepository _evidenceMoneyTransferRepo , string orderId)

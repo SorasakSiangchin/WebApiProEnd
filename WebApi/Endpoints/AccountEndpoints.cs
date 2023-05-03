@@ -16,15 +16,15 @@ namespace WebApiProjectEnd.Endpoints
     {
         public static void ConfigureAccountEndpoints(this WebApplication app)
         {
-            app.MapPost("/accounts", GetAllAccount).WithName("GetAccounts").Accepts<AccountParams>("application/json").Produces<APIResponse>(200); //.RequireAuthorization("AdminOnly");
+            app.MapPost("/accounts", GetAllAccount).WithName("GetAccounts").Accepts<AccountParams>("application/json").Produces<APIResponse>(200).RequireAuthorization();
             app.MapGet("/account/info", Info).WithName("Info").Produces<APIResponse>(200).Produces(401);
             app.MapGet("/roles", GetAllRole).WithName("GetAllRoles").Produces<APIResponse>(200);
             app.MapGet("/account/{id}", GetAccount).WithName("GetAccount").Produces<APIResponse>(200);
             app.MapPost("/register", Register).WithName("Register").Accepts<AccountRequestDTO>("multipart/form-data").Produces<APIResponse>(200).Produces(400); ;
             app.MapPost("/login", Login).WithName("Login").Accepts<LoginRequestDTO>("multipart/form-data").Produces<APIResponse>(200).Produces(400); ;
             app.MapPost("/googleLogin", GoogleLogin).WithName("GoogleLogin").Accepts<GoogleLoginRequestDTO>("application/json").Produces<APIResponse>(200).Produces(400); ;
-            app.MapPut("/account", UpdateAccount).WithName("UpdateAccount").Accepts<AccountRequestDTO>("multipart/form-data").Produces<APIResponse>(200).Produces(400); ;
-            app.MapPut("/account/password", UpdateAccountPassword).WithName("UpdateAccountPassword").Accepts<AccountRequestDTO>("multipart/form-data").Produces<APIResponse>(200).Produces(400); ;
+            app.MapPost("/account/put", UpdateAccount).WithName("UpdateAccount").Accepts<AccountRequestDTO>("multipart/form-data").Produces<APIResponse>(200).Produces(400); ;
+            app.MapPost("/account/password/put", UpdateAccountPassword).WithName("UpdateAccountPassword").Accepts<AccountRequestDTO>("multipart/form-data").Produces<APIResponse>(200).Produces(400); ;
         }
 
         private async static Task<IResult> GetAllAccount(HttpResponse httpResponse, IAccountRepository _accountRepo, AccountParams accountParams)

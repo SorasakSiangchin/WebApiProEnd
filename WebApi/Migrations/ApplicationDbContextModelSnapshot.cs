@@ -205,6 +205,51 @@ namespace WebApi.Migrations
                         },
                         new
                         {
+                            Id = 8,
+                            Name = "มะพร้าว"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Name = "ขนุน"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Name = "หมาก"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Name = "มะละกอ"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Name = "น้อยหน่า"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Name = "ลองกอง"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Name = "ส้ม"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Name = "ชมพู่"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Name = "ขนุน"
+                        },
+                        new
+                        {
                             Id = 999,
                             Name = "หายาก"
                         });

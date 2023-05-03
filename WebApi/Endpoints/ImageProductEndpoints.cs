@@ -13,7 +13,7 @@ namespace WebApi.Endpoints
         {
             app.MapGet("/imageproduct/{productID}", GetImageProduct).WithName("GetImageProduct").Produces<APIResponse>(200);
             app.MapPost("/imageproduct", CreateImageProduct).WithName("CreateImageProduct").Accepts<ImageProductDTO>("multipart/form-data").Produces<APIResponse>(200).Produces(400); ;
-            app.MapDelete("/imageproduct/{id}", DeleteImageProduct).WithName("DeleteImageProduct");
+            app.MapPost("/imageproduct/{id}", DeleteImageProduct).WithName("DeleteImageProduct");
         }
         private static async Task<IResult> GetImageProduct(string productID, IImageProductRepository _imageProductRepo)
         {

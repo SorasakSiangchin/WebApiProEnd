@@ -112,12 +112,14 @@ namespace WebApiProjectEnd.Repositorys
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var accountCart = await _cartRepo.GetCartByAccountIdAsync(account.Id);
+
             LoginResponseDTO loginResponseDTO = new()
             {
                 Account = _mapper.Map<AccountDTO>(account),
                 Token = tokenHandler.WriteToken(token),
                 Cart = accountCart
             };
+
             return loginResponseDTO;
         }
 

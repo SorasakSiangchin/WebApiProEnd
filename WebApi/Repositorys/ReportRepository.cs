@@ -4,6 +4,7 @@ using WebApi.Extenstions;
 using WebApi.Models;
 using WebApi.Models.DTOS.Report;
 using WebApi.Models.DTOS.Repost;
+using WebApi.Modes.DTOS.Order;
 using WebApi.Repositorys.IRepositorys;
 using WebApiProjectEnd.Repositorys.IRepositorys;
 
@@ -46,7 +47,6 @@ namespace WebApi.Repositorys
                 }
             };
 
-
             var sum = ProductStatistics.Sum(x => x.Amount);
 
             foreach (var item in ProductStatistics) item.NumPercen = item.Amount * 100 / sum;
@@ -63,7 +63,7 @@ namespace WebApi.Repositorys
             foreach (var order in orders)
             {
                 var items = order.OrderItems.Where(e => e.AccountID == requestDTO.AccountId);
-                if (items.Count() > 0)
+                if (items?.Count() > 0)
                 {
                     var result = SalesStatistics.Sales.Find(x => x.Month == order.Created.Value.Month && x.Year == order.Created.Value.Year);
                     if (result == null)
@@ -77,10 +77,8 @@ namespace WebApi.Repositorys
                             Year = order.Created.Value.Year
                         });
                     }
-                    else
-                    {
-                        result.price += order.Subtotal;
-                    }
+                    else result.price += order.Subtotal;
+                    
                 }
                
             }
@@ -94,6 +92,30 @@ namespace WebApi.Repositorys
 
 
             return SalesStatistics;
+        }
+
+        public async Task<double> TotalIncome(string accountId)
+        {
+            List<OrderDTO> orderDTOs = new();
+            var orders = await _db.Orders.ProjectOrderToOrderDTO(_db).ToListAsync();
+            foreach (var order in orders)
+            {
+                var items = order.OrderItems.Where(e => e.AccountID == accountId);
+                if (items?.Count() > 0) orderDTOs.Add(order);
+            };
+            return orderDTOs.Sum(e => e.GetTotal());
+        }
+
+        public async Task<double> TotalOrder(string accountId)
+        {
+            List<OrderItemDTO> orderItemDTOs = new();
+            var orders = await _db.Orders.ProjectOrderToOrderDTO(_db).ToListAsync();
+            foreach (var order in orders)
+            {
+                var items = order.OrderItems.Where(e => e.AccountID == accountId);
+                if (items?.Count() > 0) orderItemDTOs.AddRange(items);
+            };
+            return orderItemDTOs.Sum(e => e.Amount);
         }
     }
 }

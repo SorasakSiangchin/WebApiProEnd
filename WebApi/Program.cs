@@ -1,6 +1,4 @@
-using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json;
 using WebApi.Endpoints;
 using WebApi.Installers;
 using WebApi.Middlewares;
@@ -9,11 +7,7 @@ using WebApiProjectEnd.Endpoints;
 using WebApiProjectEnd.Installers;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.MyInstallerExtensions(builder);
-builder.Services.AddControllers(option =>
-{
-    //option.ReturnHttpNotAcceptable = true;
-}).AddNewtonsoftJson().AddXmlDataContractSerializerFormatters();
-//builder.Services.AddControllers().AddNewtonsoftJson();
+
 
 var app = builder.Build();
 #region  //สร้ำงข้อมูลจำลอง Fake data 
@@ -23,7 +17,7 @@ var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
 try
 {
     // orm
-    await context.Database.MigrateAsync();   //สร้ำง DB ใหอ้ตัโนมตัถิำยังไม่มี ***** ใช้งานได้จริง
+    await context.Database.MigrateAsync();   
 }
 catch (Exception ex)
 {
@@ -31,15 +25,12 @@ catch (Exception ex)
 }
 #endregion
 
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-
-
-
 app.UseDefaultFiles(); // อนุญาตให้เรียกไฟล์ต่างๆ ใน wwwroot
 
 app.UseStaticFiles(); // อนุญาตให้เข้าถึงไฟล์ค่าคงที่ได้ 
@@ -55,6 +46,7 @@ app.UseCors(CORSInstaller.MyAllowSpecificOrigins);
 app.UseAuthentication();
 //การอนุญาต
 app.UseAuthorization();
+
 
 
 app.ConfigureAccountEndpoints();
@@ -79,6 +71,7 @@ app.UseEndpoints(endpoints =>
     endpoints.MapControllers();
     endpoints.MapFallbackToController("Index", "Fallback"); // บอกเส้นทางมันก่อน
 });
+
 
 app.Run();
 

@@ -11,8 +11,8 @@ namespace WebApi.Endpoints
         public static void ConfigureDetailProductEndpoints(this WebApplication app) {
             app.MapGet("detailProduct/idProduct", GetDetailProduct).WithName("GetDetailProduct").Produces<APIResponse>(200);
             app.MapPost("detailProduct", CreateDetailProduct).WithName("CreateDetailProduct").Accepts<DetailProductDTO>("application/json").Produces<APIResponse>(200);
-            app.MapPut("detailProduct", UpdateDetailProduct).WithName("UpdateDetailProduct").Accepts<DetailProductDTO>("application/json").Produces<APIResponse>(200).Produces(400);
-            app.MapDelete("detailProduct/{id:int}", DeleteDetailProduct).WithName("DeleteDetailProduct");
+            app.MapPost("detailProduct/put", UpdateDetailProduct).WithName("UpdateDetailProduct").Accepts<DetailProductDTO>("application/json").Produces<APIResponse>(200).Produces(400);
+            app.MapPost("detailProduct/{id:int}", DeleteDetailProduct).WithName("DeleteDetailProduct");
         }
 
         private static async Task<IResult> GetDetailProduct(IDetailProductRepository _detailProductRepo, string idProduct)

@@ -10,9 +10,9 @@ namespace WebApi.Endpoints
     {
         public static void ConfigureDeliveryEndpoints(this WebApplication app)
         {
-            app.MapGet("delivery/orderId", GetDeliveryByOrderId).WithName("GetDeliveryByOrderId").Produces<APIResponse>();
-            app.MapPost("delivery", CreateDelivery).WithName("CreateDelivery").Accepts<DeliveryRequestDTO>("multipart/form-data").Produces<APIResponse>(200);
-            app.MapPut("delivery", UpdateDelivery).WithName("UpdateDelivery").Accepts<DeliveryRequestDTO>("multipart/form-data").Produces<APIResponse>(200).Produces(400);
+            app.MapGet("delivery/orderId", GetDeliveryByOrderId).WithName("GetDeliveryByOrderId").Produces<APIResponse>(); 
+            app.MapPost("delivery", CreateDelivery).WithName("CreateDelivery").Accepts<DeliveryRequestDTO>("multipart/form-data").Produces<APIResponse>(200); 
+            app.MapPost("delivery/put", UpdateDelivery).WithName("UpdateDelivery").Accepts<DeliveryRequestDTO>("multipart/form-data").Produces<APIResponse>(200).Produces(400);
         }
         private async static Task<IResult> GetDeliveryByOrderId(IDeliveryRepository _deliveryRepo, string orderId)
         {
