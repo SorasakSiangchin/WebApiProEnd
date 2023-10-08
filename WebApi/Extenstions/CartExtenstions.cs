@@ -17,7 +17,7 @@ namespace WebApi.Extenstions
                 {
                     Id = item.Id,
                     Amount = item.Amount,
-                    ImageUrl = !string.IsNullOrEmpty(item.Product.ImageUrl) ? $"{ApplicationUrl.Url}/product/{item.Product.ImageUrl}" : ""  ,
+                    ImageUrl = !string.IsNullOrEmpty(item.Product.ImageUrl) ? item.Product.ImageUrl : ""  ,
                     Name = item.Product.Name,
                     CategoryProductName = item.Product.CategoryProduct.Name ,
                     Price = item.Product.Price,

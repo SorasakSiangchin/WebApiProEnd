@@ -4,7 +4,7 @@ namespace WebApi.Repositorys.IRepositorys
 {
     public interface IAddressRepository
     {
-        Task<List<Address>> GetAllAsync(string accountId, bool tracked = true);
+        Task<List<Address>> GetAllAsync(bool tracked = true);
         Task<Address> GetAsync(int id, bool tracked = true);
         Task CreateAsync(Address address);
         Task UpdateAsync(Address address);

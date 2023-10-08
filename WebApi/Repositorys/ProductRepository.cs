@@ -11,11 +11,16 @@ namespace WebApiProjectEnd.Repositorys
     {
         private readonly ApplicationDbContext _db;
         private readonly IUploadFileRepository _uploadFileRepo;
+        private readonly IAuthRepository _authRepo;
 
-        public ProductRepository(ApplicationDbContext db, IUploadFileRepository uploadFileRepo)
+        public ProductRepository(ApplicationDbContext db, 
+            IUploadFileRepository uploadFileRepo , 
+            IAccountRepository accountRepo ,
+            IAuthRepository authRepo)
         {
             _db = db;
             _uploadFileRepo = uploadFileRepo;
+            _authRepo = authRepo;
         }
 
         public async Task CreateAsync(Product product)
@@ -63,10 +68,12 @@ namespace WebApiProjectEnd.Repositorys
         {
             _db.Update(product);
         }
+
         public async Task SaveAsync()
         {
             await _db.SaveChangesAsync();
         }
+
         public async Task<(string errorMessage, string imageName)> UploadImage(IFormFileCollection formFiles)
         {
             var errorMessage = string.Empty;
@@ -76,18 +83,13 @@ namespace WebApiProjectEnd.Repositorys
                 errorMessage = _uploadFileRepo.Validation(formFiles);
                 if (string.IsNullOrEmpty(errorMessage))
                 {
-                    imageName = (await _uploadFileRepo.UploadFile(formFiles, "product"))[0];
+                    imageName = (await _uploadFileRepo.UploadFile(formFiles))[0];
                 }
             }
             return (errorMessage, imageName);
         }
 
         private string GenerateID() => Guid.NewGuid().ToString("N");
-
-        public async Task DeleteImage(string fileName)
-        {
-            await _uploadFileRepo.DeleteFile(fileName, "product");
-        }
 
         public async Task<ICollection<ProductDTO>> GetRareAsync()
         {
@@ -99,14 +101,14 @@ namespace WebApiProjectEnd.Repositorys
                 .ToListAsync();
         }
 
-        public async Task<ICollection<ProductDTO>> GetProductByAccountIdAsync(string accountId)
+        public async Task<ICollection<ProductDTO>> GetProductByAccountIdAsync()
         {
            return await _db.Products
                 .Include(e => e.CategoryProduct)
                 .Include(e => e.CategoryProduct)
                 .Include(e => e.WeightUnit)
                 .Include(e => e.LevelProduct)
-                .Where(e => e.AccountID.Equals(accountId))
+                .Where(e => e.AccountID.Equals(_authRepo.GetUserId()))
                 .ProjectProductToProductDTO(_db)
                 .ToListAsync();
         }

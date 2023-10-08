@@ -12,9 +12,7 @@ namespace WebApiProjectEnd.Installers
             {
                 containerBuilder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
                 //- จะค้นหาชื่อไฟล์ที่ลงท้ายด้วย Service แล้วจะ DI โดยอัตโนมัติ
-                .Where(t => t.Name.EndsWith("Repository")
-                
-                )
+                .Where(t => t.Name.EndsWith("Repository"))
                 .AsImplementedInterfaces();
             }));
         }

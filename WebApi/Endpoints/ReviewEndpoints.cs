@@ -1,25 +1,27 @@
 ﻿
 using AutoMapper;
+using Microsoft.AspNetCore.SignalR;
 using System.Net;
 using WebApi.Extenstions;
+using WebApi.Hubs;
 using WebApi.Models;
 using WebApi.Models.DTOS.Review;
-using WebApi.Modes.DTOS.Product;
 using WebApi.Repositorys.IRepositorys;
 using WebApi.RequestHelpers;
 
 namespace WebApi.Endpoints
 {
-    public static class ReviewEndpoints
+    public  static class ReviewEndpoints
     {
         public static void ConfigureReviewEndpoints(this WebApplication app)
         {
             app.MapGet("review/orderItemId", GetReviewByOrderItemId).WithName("GetReviewByOrderItemId").Produces<APIResponse>(200);
             app.MapPost("review/productId", GetReviewByProductId).WithName("GetReviewByProductId").Accepts<ReviewParams>("application/json").Produces<APIResponse>(200);
             app.MapPost("review", CreateReview).WithName("CreateReview").Accepts<ReviewRequestDTO>("multipart/form-data").Produces<APIResponse>(200).Produces(400);
+            
         }
-
-        private async static Task<IResult> CreateReview(IMapper _mapper, IReviewRepository _reviewRepo, ReviewRequestDTO model)
+        
+        private async static Task<IResult> CreateReview(IMapper _mapper, IReviewRepository _reviewRepo, IHubContext<DataHub> hub , ReviewRequestDTO model)
         {
             APIResponse response = new() { IsSuccess = false, StatusCode = HttpStatusCode.BadRequest };
             (string errorImage, List<string> imageNames) = await _reviewRepo.UploadImage(model.ImageFiles);
@@ -28,7 +30,9 @@ namespace WebApi.Endpoints
                 response.ErrorMessages.Add(errorImage);
                 return Results.BadRequest(response);
             }
+
             (string errorVedio, string vedioName) = await _reviewRepo.UploadVedio(model.VideoFiles);
+            
             if (!string.IsNullOrEmpty(errorVedio))
             {
                 response.ErrorMessages.Add(errorVedio);
@@ -70,4 +74,7 @@ namespace WebApi.Endpoints
             return Results.Ok(response);
         }
     }
+
+    
 }
+ 

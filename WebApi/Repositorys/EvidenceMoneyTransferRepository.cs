@@ -56,13 +56,11 @@ namespace WebApi.Repositorys
                 errorMessage = _uploadFile.Validation(formFiles);
                 if (string.IsNullOrEmpty(errorMessage))
                 {
-                    imageName = (await _uploadFile.UploadFile(formFiles, "evidenceMoneyTransfer"))[0];
+                    imageName = (await _uploadFile.UploadFile(formFiles))[0];
                 }
             }
             return (errorMessage, imageName);
         }
-
-        public async Task DeleteImage(string fileName) => await _uploadFile.DeleteFile(fileName, "evidenceMoneyTransfer");
 
         public async Task<EvidenceMoneyTransfer> GetAsync(int id, bool tracked = true)
         {
@@ -77,10 +75,6 @@ namespace WebApi.Repositorys
 
         public async Task UpdateAsync(EvidenceMoneyTransfer evidenceMoneyTransfer) => _db.Update(evidenceMoneyTransfer);
 
-        public Task RemoveAsync(EvidenceMoneyTransfer entity)
-        {
-            throw new NotImplementedException();
-        }
-
+        public Task RemoveAsync(EvidenceMoneyTransfer entity) => null;
     }
 }

@@ -8,7 +8,8 @@
         //ตรวจสอบนามสกุลไฟล์หรือรูปแบบที่่ต้องการ
         string Validation(IFormFileCollection formFiles);
         //อัพโหลดและส่งรายชื่อไฟล์ออกมา
-        Task<List<string>> UploadFile (IFormFileCollection formFiles , string key);
+        //Task<List<string>> UploadFile (IFormFileCollection formFiles , string key);
+        Task<List<string>> UploadFile(IFormFileCollection formFiles);
         Task DeleteFile (string filename, string key);
     }
 }

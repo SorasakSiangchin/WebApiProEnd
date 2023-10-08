@@ -55,7 +55,7 @@ namespace WebApi.Extenstions
                     Color = product.Color,
                     Created = product.Created,
                     Description = product.Description,
-                    ImageUrl = !string.IsNullOrEmpty(product.ImageUrl) ? $"{ApplicationUrl.Url}/product/{product.ImageUrl}" : "",
+                    ImageUrl = !string.IsNullOrEmpty(product.ImageUrl) ? product.ImageUrl : "",
                     LastUpdate = product.LastUpdate,
                     LevelProduct = product.LevelProduct,
                     LevelProductID = product.LevelProductID,

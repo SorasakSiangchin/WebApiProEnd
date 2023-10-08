@@ -49,7 +49,7 @@ namespace WebApi.Extenstions
             return new EvidenceMoneyTransfer
             {
                 Created = evidence.Created,
-                Evidence = !string.IsNullOrEmpty(evidence.Evidence) ? $"{ApplicationUrl.Url}/evidenceMoneyTransfer/{evidence.Evidence}" : "",
+                Evidence = !string.IsNullOrEmpty(evidence.Evidence) ? evidence.Evidence : "",
                 Id = evidence.Id,
                 OrderID = evidence.OrderID,
             };

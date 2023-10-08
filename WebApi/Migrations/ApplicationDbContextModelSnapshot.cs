@@ -63,29 +63,47 @@ namespace WebApi.Migrations
                     b.HasIndex("RoleID");
 
                     b.ToTable("Accounts");
-                });
 
-            modelBuilder.Entity("WebApi.Models.AccountPassword", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AccountID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AccountID");
-
-                    b.ToTable("AccountPasswords");
+                    b.HasData(
+                        new
+                        {
+                            Id = "account01",
+                            Email = "XxArmCustomerxX@gmail.com",
+                            FirstName = "ArmCustomer",
+                            ImageUrl = "https://cv.lnwfile.com/_/cv/_raw/rn/s7/3p.png",
+                            LastName = "Kung",
+                            LoginBy = "",
+                            Password = "Mw52so+8rK3NMGo/MDb85w==.7Rxql67dW+VxjYSja2uusRgJy860Q0KKTD0RyA9ju8Q=",
+                            PhoneNumber = "0616032203",
+                            RoleID = 1,
+                            Status = true
+                        },
+                        new
+                        {
+                            Id = "account02",
+                            Email = "XxArmSellerxX@gmail.com",
+                            FirstName = "ArmSeller",
+                            ImageUrl = "https://cv.lnwfile.com/_/cv/_raw/rn/s7/3p.png",
+                            LastName = "Kung",
+                            LoginBy = "",
+                            Password = "Mw52so+8rK3NMGo/MDb85w==.7Rxql67dW+VxjYSja2uusRgJy860Q0KKTD0RyA9ju8Q=",
+                            PhoneNumber = "0616032203",
+                            RoleID = 2,
+                            Status = true
+                        },
+                        new
+                        {
+                            Id = "account03",
+                            Email = "XxArmAdminxX@gmail.com",
+                            FirstName = "ArmAdmin",
+                            ImageUrl = "https://cv.lnwfile.com/_/cv/_raw/rn/s7/3p.png",
+                            LastName = "Kung",
+                            LoginBy = "",
+                            Password = "Mw52so+8rK3NMGo/MDb85w==.7Rxql67dW+VxjYSja2uusRgJy860Q0KKTD0RyA9ju8Q=",
+                            PhoneNumber = "0616032203",
+                            RoleID = 3,
+                            Status = true
+                        });
                 });
 
             modelBuilder.Entity("WebApi.Models.Address", b =>
@@ -590,6 +608,152 @@ namespace WebApi.Migrations
                     b.HasIndex("WeightUnitID");
 
                     b.ToTable("Products");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "product01",
+                            AccountID = "account01",
+                            CategoryProductID = 2,
+                            Color = "เขียว",
+                            Created = new DateTime(2023, 9, 9, 16, 9, 53, 585, DateTimeKind.Local).AddTicks(8866),
+                            Description = "อร่อย",
+                            ImageUrl = "https://www.ตลาดกลางผลไม้.com/wp-content/uploads/2019/10/72414759_106730297406260_6103449987075538944_n.jpg",
+                            LevelProductID = 1,
+                            Name = "ส้มโอทับทิมสยาม",
+                            Price = 150,
+                            Stock = 50,
+                            Weight = 1.0,
+                            WeightUnitID = 1
+                        },
+                        new
+                        {
+                            Id = "product02",
+                            AccountID = "account01",
+                            CategoryProductID = 2,
+                            Color = "เขียว",
+                            Created = new DateTime(2023, 9, 9, 16, 9, 53, 585, DateTimeKind.Local).AddTicks(8889),
+                            Description = "อร่อย",
+                            ImageUrl = "https://scontent-sin6-4.xx.fbcdn.net/v/t39.30808-6/299863661_433735048781055_6878774558773361005_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=3DcFFDZIL-0AX_oGgNx&_nc_ht=scontent-sin6-4.xx&oh=00_AfDQhZa4WiqXQ5mbCx6057-jHaiFA7Llf5Caf9UuFfyl9w&oe=64EC700D",
+                            LevelProductID = 1,
+                            Name = "กล้วยน้ำว้ามะลิอ่อง",
+                            Price = 150,
+                            Stock = 50,
+                            Weight = 1.0,
+                            WeightUnitID = 1
+                        },
+                        new
+                        {
+                            Id = "product03",
+                            AccountID = "account01",
+                            CategoryProductID = 2,
+                            Color = "เขียว",
+                            Created = new DateTime(2023, 9, 9, 16, 9, 53, 585, DateTimeKind.Local).AddTicks(8892),
+                            Description = "อร่อย",
+                            ImageUrl = "https://cdn.shortpixel.ai/spai/w_870+q_lossy+ret_img+to_webp/amprohealth.com/wp-content/uploads/2017/09/135-%E0%B9%80%E0%B8%AA%E0%B8%B2%E0%B8%A7%E0%B8%A3%E0%B8%AA.jpg",
+                            LevelProductID = 1,
+                            Name = "เสาวรส",
+                            Price = 150,
+                            Stock = 50,
+                            Weight = 1.0,
+                            WeightUnitID = 1
+                        },
+                        new
+                        {
+                            Id = "product04",
+                            AccountID = "account01",
+                            CategoryProductID = 2,
+                            Color = "ม่วง",
+                            Created = new DateTime(2023, 9, 9, 16, 9, 53, 585, DateTimeKind.Local).AddTicks(8893),
+                            Description = "อร่อย",
+                            ImageUrl = "https://ตลาดเกษตรกรออนไลน์.com/uploads/products/cover_6285c7898575f.jpg",
+                            LevelProductID = 1,
+                            Name = "มังคุดสด มาตรฐาน GAP",
+                            Price = 250,
+                            Stock = 50,
+                            Weight = 1.0,
+                            WeightUnitID = 1
+                        },
+                        new
+                        {
+                            Id = "product05",
+                            AccountID = "account01",
+                            CategoryProductID = 2,
+                            Color = "เหลืองทอง",
+                            Created = new DateTime(2023, 9, 9, 16, 9, 53, 585, DateTimeKind.Local).AddTicks(8895),
+                            Description = "อร่อย",
+                            ImageUrl = "https://dk8dmtco5sckz.cloudfront.net/wp-content/uploads/2023/03/AnyConv.com__15-8.webp",
+                            LevelProductID = 1,
+                            Name = "ทุเรียนหมอนทอง",
+                            Price = 250,
+                            Stock = 50,
+                            Weight = 1.0,
+                            WeightUnitID = 1
+                        },
+                        new
+                        {
+                            Id = "product06",
+                            AccountID = "account01",
+                            CategoryProductID = 3,
+                            Color = "เหลืองทอง",
+                            Created = new DateTime(2023, 9, 9, 16, 9, 53, 585, DateTimeKind.Local).AddTicks(8897),
+                            Description = "อร่อย",
+                            ImageUrl = "https://www.ตลาดเกษตรกรออนไลน์.com/uploads/products/cover_64914f3b033fd.jpg",
+                            LevelProductID = 1,
+                            Name = "แก้วมังกร",
+                            Price = 250,
+                            Stock = 50,
+                            Weight = 1.0,
+                            WeightUnitID = 1
+                        },
+                        new
+                        {
+                            Id = "product07",
+                            AccountID = "account01",
+                            CategoryProductID = 3,
+                            Color = "เหลืองทอง",
+                            Created = new DateTime(2023, 9, 9, 16, 9, 53, 585, DateTimeKind.Local).AddTicks(8899),
+                            Description = "หวานฉ่ำชื่นใจ ไม่แสบคอ เนื้อเยอะ เม็ดลีบ แห้งไม่แฉะ",
+                            ImageUrl = "https://www.ตลาดเกษตรกรออนไลน์.com/uploads/products/cover_64914f3b033fd.jpg",
+                            LevelProductID = 1,
+                            Name = "ลำไยอีดอ",
+                            Price = 250,
+                            Stock = 50,
+                            Weight = 1.0,
+                            WeightUnitID = 1
+                        },
+                        new
+                        {
+                            Id = "product08",
+                            AccountID = "account03",
+                            CategoryProductID = 999,
+                            Color = "เลือดหมู",
+                            Created = new DateTime(2023, 9, 9, 16, 9, 53, 585, DateTimeKind.Local).AddTicks(8901),
+                            Description = "หวานฉ่ำชื่นใจ ไม่แสบคอ เนื้อเยอะ เม็ดลีบ แห้งไม่แฉะ",
+                            ImageUrl = "https://www.77kaoded.com/wp-content/uploads/2021/08/IMG_5061.jpg",
+                            LevelProductID = 1,
+                            Name = "เสาวรส",
+                            Price = 250,
+                            Stock = 50,
+                            Weight = 1.0,
+                            WeightUnitID = 1
+                        },
+                        new
+                        {
+                            Id = "product09",
+                            AccountID = "account01",
+                            CategoryProductID = 3,
+                            Color = "เหลือง",
+                            Created = new DateTime(2023, 9, 9, 16, 9, 53, 585, DateTimeKind.Local).AddTicks(8903),
+                            Description = "อร่อย",
+                            ImageUrl = "https://www.ตลาดเกษตรกรออนไลน์.com/uploads/products/398.jpg",
+                            LevelProductID = 1,
+                            Name = "เมล่อน",
+                            Price = 250,
+                            Stock = 50,
+                            Weight = 1.0,
+                            WeightUnitID = 1
+                        });
                 });
 
             modelBuilder.Entity("WebApi.Models.Review", b =>
@@ -794,17 +958,6 @@ namespace WebApi.Migrations
                         .IsRequired();
 
                     b.Navigation("Role");
-                });
-
-            modelBuilder.Entity("WebApi.Models.AccountPassword", b =>
-                {
-                    b.HasOne("WebApi.Models.Account", "Account")
-                        .WithMany()
-                        .HasForeignKey("AccountID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Account");
                 });
 
             modelBuilder.Entity("WebApi.Models.Address", b =>

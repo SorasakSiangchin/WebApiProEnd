@@ -13,11 +13,13 @@ namespace WebApi.Repositorys
     public class ReportRepository : IReportRepository
     {
         private readonly ApplicationDbContext _db;
+        private readonly IAuthRepository _authRepo;
         private readonly IProductRepository _productRepo;
 
-        public ReportRepository(ApplicationDbContext db, IProductRepository productRepo)
+        public ReportRepository(ApplicationDbContext db, IProductRepository productRepo , IAuthRepository authRepo)
         {
             _db = db;
+            _authRepo = authRepo;
         }
 
         public async Task<List<ProductStatisticsDTO>> ProductStatistics(ProductStatisticsRequestDTO requestDTO)
@@ -94,8 +96,9 @@ namespace WebApi.Repositorys
             return SalesStatistics;
         }
 
-        public async Task<double> TotalIncome(string accountId)
+        public async Task<double> TotalIncome()
         {
+            string accountId = _authRepo.GetUserId();
             List<OrderDTO> orderDTOs = new();
             var orders = await _db.Orders.ProjectOrderToOrderDTO(_db).ToListAsync();
             foreach (var order in orders)
@@ -106,8 +109,9 @@ namespace WebApi.Repositorys
             return orderDTOs.Sum(e => e.GetTotal());
         }
 
-        public async Task<double> TotalOrder(string accountId)
+        public async Task<double> TotalOrder()
         {
+            string accountId = _authRepo.GetUserId();
             List<OrderItemDTO> orderItemDTOs = new();
             var orders = await _db.Orders.ProjectOrderToOrderDTO(_db).ToListAsync();
             foreach (var order in orders)

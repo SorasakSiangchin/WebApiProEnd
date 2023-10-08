@@ -33,13 +33,13 @@ namespace WebApi.Extenstions
                     Information = review.Information,
                     OrderItemID = review.OrderItemID,
                     Score = review.Score,
-                    VdoUrl = !string.IsNullOrEmpty(review.VdoUrl) ? $"{ApplicationUrl.Url}/reviewVdo/{review.VdoUrl}" : "",
+                    VdoUrl = !string.IsNullOrEmpty(review.VdoUrl) ? $"{ApplicationUrl.UrlServer}/review/{review.VdoUrl}" : "",
                     imageReviews = db.ImageReviews.Where(e => e.ReviewID.Equals(review.Id)).Select(
                        image => new ImageReview
                        {
                            Id = image.Id,
                            ReviewID = image.ReviewID,
-                           ImageUrl = !string.IsNullOrEmpty(image.ImageUrl) ? $"{ApplicationUrl.Url}/reviewImage/{image.ImageUrl}" : "",
+                           ImageUrl = !string.IsNullOrEmpty(image.ImageUrl) ? image.ImageUrl : "",
                        }).ToList(),
                     Account = AccountResponse.FromAccount(db.Accounts.Include(e => e.Role).FirstOrDefault(e => e.Id.Equals(review.AccountID)))
                 }).AsNoTracking();

@@ -10,10 +10,9 @@ namespace WebApiProjectEnd.Repositorys.IRepositorys
         Task<ICollection<ProductDTO>> GetAllAsync(ProductParams? productParams);
         Task<ProductDTO> GetAsync(string id, bool tracked = true);
         Task<ICollection<ProductDTO>> GetAsyncByNameAsync(string name);
-        Task<ICollection<ProductDTO>> GetProductByAccountIdAsync(string accountId);
+        Task<ICollection<ProductDTO>> GetProductByAccountIdAsync();
         Task<ICollection<ProductDTO>> GetRareAsync();
         Task<ICollection<ProductDTO>> GetRecommendAsync(int num);
         Task<(string errorMessage, string imageName)> UploadImage(IFormFileCollection formFiles);
-        Task DeleteImage(string fileName);
     }
 }

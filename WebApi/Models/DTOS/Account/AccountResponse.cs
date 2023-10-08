@@ -27,7 +27,7 @@ namespace WebApi.Modes
                 LastName = account.LastName,
                 Password = account.Password,
                 PhoneNumber = account.PhoneNumber,
-                ImageUrl = CheckImageUrl(account.ImageUrl , account.LoginBy) ,
+                ImageUrl = account.ImageUrl ,
                 Role = new Role
                 {
                     Id = account.Role.Id,
@@ -36,21 +36,6 @@ namespace WebApi.Modes
                 RoleID = account.RoleID,
                 Status = account.Status,
             };
-        }
-
-        private static string CheckImageUrl(string? ImageUrl , string? loginBy)
-        {
-            if (string.IsNullOrEmpty(loginBy))
-            {
-                if (!string.IsNullOrEmpty(ImageUrl)) return $"{ApplicationUrl.Url}/account/{ImageUrl}";
-                else return "";
-            }
-            else
-            {
-                if (!string.IsNullOrEmpty(ImageUrl)) return ImageUrl;
-                else return "";
-            }
-           
         }
     }
 }

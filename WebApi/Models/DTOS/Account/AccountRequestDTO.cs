@@ -35,7 +35,6 @@ namespace WebApiProjectEnd.Modes.DTOS.Accounts
                 StatusLogin = SetData("StatusLogin", context),
                 Status = Convert.ToBoolean(SetData("Status", context)),
                 RoleID = roleID
-
             }); ;
         }
 

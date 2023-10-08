@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using WebApi.Models;
 using WebApi.Models.DTOS.DetailProduct;
 using WebApi.Repositorys.IRepositorys;
@@ -24,7 +25,7 @@ namespace WebApi.Endpoints
             response.StatusCode = HttpStatusCode.OK;
             return Results.Ok(response);
         }
-
+        [Authorize(Roles = "admin,seller")]
         private static async Task<IResult> CreateDetailProduct(IMapper _mapper, IDetailProductRepository _detailProductRepo, DetailProductDTO model)
         {
             APIResponse response = new() { IsSuccess = false, StatusCode = HttpStatusCode.BadRequest };
@@ -36,7 +37,7 @@ namespace WebApi.Endpoints
             response.StatusCode = HttpStatusCode.Created;
             return Results.Ok(response);
         }
-
+        [Authorize(Roles = "admin,seller")]
         private static async Task<IResult> UpdateDetailProduct(IMapper _mapper, IDetailProductRepository _detailProductRepo, DetailProductDTO model)
         {
             APIResponse response = new() { IsSuccess = false, StatusCode = HttpStatusCode.BadRequest };
@@ -49,7 +50,7 @@ namespace WebApi.Endpoints
             response.StatusCode = HttpStatusCode.Created;
             return Results.Ok(response);
         }
-
+        [Authorize(Roles = "admin,seller")]
         private static async Task<IResult> DeleteDetailProduct(IMapper _mapper, IDetailProductRepository _detailProductRepo, int id)
         {
             APIResponse response = new() { IsSuccess = false, StatusCode = HttpStatusCode.BadRequest };

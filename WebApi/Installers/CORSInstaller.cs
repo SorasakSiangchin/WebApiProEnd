@@ -13,7 +13,7 @@ namespace WebApi.Installers
                     policy =>
                     {
                         policy
-                        .WithOrigins("http://localhost:5173" , "http://tee.kru.ac.th" )
+                        .WithOrigins("http://localhost:5173" , "https://tee.kru.ac.th" , "http://10.103.0.16/")
                         //.AllowAnyOrigin()
                         .AllowAnyHeader()
                         .AllowAnyMethod()

@@ -26,10 +26,6 @@ namespace WebApi.Repositorys
             }
         }
 
-        public async Task DeleteImage(string fileName)
-        {
-            await _uploadFile.DeleteFile(fileName, "imageProduct");
-        }
 
         public async Task<ICollection<ImageProduct>> GetAllAsync(string productID) => await _db.ImageProducts.OrderBy(e => e.Id).Where(x => x.ProductID.Equals(productID)).ToListAsync();
         
@@ -56,7 +52,7 @@ namespace WebApi.Repositorys
                 errorMessage = _uploadFile.Validation(formFiles);
                 if (string.IsNullOrEmpty(errorMessage))
                 {
-                    imageName = (await _uploadFile.UploadFile(formFiles , "imageProduct"));
+                    imageName = (await _uploadFile.UploadFile(formFiles));
                 }
             }
             return (errorMessage, imageName);

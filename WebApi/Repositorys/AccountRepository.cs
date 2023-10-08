@@ -1,18 +1,18 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
+using WebApi.Extenstions;
+using WebApi.Models;
+using WebApi.Modes;
+using WebApi.Repositorys.IRepositorys;
+using WebApi.RequestHelpers;
 using WebApiProjectEnd.Modes.DTOS.Accounts;
 using WebApiProjectEnd.Repositorys.IRepositorys;
-using WebApi.Repositorys.IRepositorys;
-using WebApi.Modes;
-using WebApi.Models;
-using WebApi.RequestHelpers;
-using WebApi.Extenstions;
 
 namespace WebApiProjectEnd.Repositorys
 {
@@ -24,7 +24,12 @@ namespace WebApiProjectEnd.Repositorys
         private readonly IUploadFileRepository _uploadFile;
         private readonly ICartRepository _cartRepo;
         private string secretKey;
-        public AccountRepository(ApplicationDbContext db, IMapper mapper, IConfiguration configuration, IUploadFileRepository uploadFile, ICartRepository cartRepo)
+        public AccountRepository(
+            ApplicationDbContext db, 
+            IMapper mapper, 
+            IConfiguration configuration, 
+            IUploadFileRepository uploadFile, 
+            ICartRepository cartRepo )
         {
             _db = db;
             _mapper = mapper;
@@ -33,6 +38,7 @@ namespace WebApiProjectEnd.Repositorys
             _cartRepo = cartRepo;
             secretKey = _configuration.GetValue<string>("ApiSettings:Secret");
         }
+        
         public async Task<ICollection<AccountDTO>> GetAllAsync(AccountParams accountParams)
         {
             return _db.Accounts
@@ -65,27 +71,11 @@ namespace WebApiProjectEnd.Repositorys
         {
             Account account = await CheckEmail(loginRequestDTO.Email);
             if (account == null || !VerifyPassword(account.Password, loginRequestDTO.Password)) return null;
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.UTF8.GetBytes(secretKey);
-            var tokenDescriptor = new SecurityTokenDescriptor()
-            {
-                Subject = new ClaimsIdentity(
-                    new Claim[]
-                    {
-                        new Claim("Id" , account.Id),
-                        new Claim("Email" ,account.Email  ),
-                        new Claim("Role" , account.Role.Name)
-                        ,
-                    }),
-                Expires = DateTime.UtcNow.AddDays(7),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
             var accountCart = await _cartRepo.GetCartByAccountIdAsync(account.Id);
             LoginResponseDTO loginResponseDTO = new()
             {
                 Account = _mapper.Map<AccountDTO>(AccountResponse.FromAccount(account)),
-                Token = tokenHandler.WriteToken(token),
+                Token = CreateToken(account),
                 Cart = accountCart
             };
             return loginResponseDTO;
@@ -95,28 +85,12 @@ namespace WebApiProjectEnd.Repositorys
         {
             Account account = await CheckEmail(loginRequestDTO.Email);
             if (account == null || !VerifyPassword(account.Password, loginRequestDTO.Password)) return null;
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.UTF8.GetBytes(secretKey);
-            var tokenDescriptor = new SecurityTokenDescriptor()
-            {
-                Subject = new ClaimsIdentity(
-                    new Claim[]
-                    {
-                        new Claim("Id" , account.Id),
-                        new Claim("Email" ,account.Email  ),
-                        new Claim("Role" , account.Role.Name)
-                        ,
-                    }),
-                Expires = DateTime.UtcNow.AddDays(7),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
             var accountCart = await _cartRepo.GetCartByAccountIdAsync(account.Id);
 
             LoginResponseDTO loginResponseDTO = new()
             {
                 Account = _mapper.Map<AccountDTO>(account),
-                Token = tokenHandler.WriteToken(token),
+                Token = CreateToken(account),
                 Cart = accountCart
             };
 
@@ -156,7 +130,7 @@ namespace WebApiProjectEnd.Repositorys
             if (_uploadFile.IsUpload(formFiles))
             {
                 errorMessage = _uploadFile.Validation(formFiles);
-                if (string.IsNullOrEmpty(errorMessage)) imageName = (await _uploadFile.UploadFile(formFiles, "account"))[0];
+                if (string.IsNullOrEmpty(errorMessage)) imageName = (await _uploadFile.UploadFile(formFiles))[0];
             }
             return (errorMessage, imageName);
         }
@@ -172,6 +146,7 @@ namespace WebApiProjectEnd.Repositorys
             var hpw = $"{Convert.ToBase64String(salt)}.{hashed}";
             return hpw;
         }
+
         private string HashPassword(string password, Byte[] salt)
         {
             string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
@@ -182,7 +157,9 @@ namespace WebApiProjectEnd.Repositorys
               numBytesRequested: 256 / 8));
             return hashed;
         }
+
         private string GenerateID() => Guid.NewGuid().ToString("N");
+
         private bool VerifyPassword(string saltAndHashFromDB, string password)
         {
             // ทำการแยกส่วนเป็น 2 สว่น เป็นอเร
@@ -197,6 +174,7 @@ namespace WebApiProjectEnd.Repositorys
 
             return hashed == passwordHash;
         }
+
         public Account GetInfo(string accessToken)
         {
             //as JwtSecurityToken แปลงค่า Token (ถอดรหัส)
@@ -215,14 +193,33 @@ namespace WebApiProjectEnd.Repositorys
             };
             return account;
         }
+
         public async Task UpdateAsync(Account account)
         {
             _db.Update(account);
             await _db.SaveChangesAsync();
         }
-        public async Task DeleteImage(string fileName)
+
+        private string CreateToken(Account account)
         {
-            await _uploadFile.DeleteFile(fileName, "account");
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.UTF8.GetBytes(secretKey);
+            var tokenDescriptor = new SecurityTokenDescriptor()
+            {
+                Subject = new ClaimsIdentity(
+                    new Claim[]
+                    {
+                        new Claim(ClaimTypes.NameIdentifier , account.Id),
+                        new Claim(ClaimTypes.Name ,account.Email  ),
+                        new Claim(ClaimTypes.Role , account.Role.Name)
+                        ,
+                    }),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
         }
+
     }
 }

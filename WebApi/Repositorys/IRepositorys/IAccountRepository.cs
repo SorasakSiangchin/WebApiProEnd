@@ -17,6 +17,5 @@ namespace WebApiProjectEnd.Repositorys.IRepositorys
         Task<AccountDTO> Register(Account account);
         Account GetInfo(string accessToken);
         Task<(string errorMessage, string imageName)> UploadImage(IFormFileCollection formFiles);
-        Task DeleteImage(string fileName);
     }
 }

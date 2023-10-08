@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using WebApi.Endpoints;
+using WebApi.Hubs;
 using WebApi.Installers;
 using WebApi.Middlewares;
 using WebApi.Models;
@@ -47,8 +48,6 @@ app.UseAuthentication();
 //การอนุญาต
 app.UseAuthorization();
 
-
-
 app.ConfigureAccountEndpoints();
 app.ConfigureProductEndpoints();
 app.ConfigureDetailProductEndpoints();
@@ -66,10 +65,13 @@ app.ConfigureStatusDeliveryEndpoints();
 app.ConfigureReviewEndpoints();
 app.ConfigureOrderMessageEndpoints();
 
+app.MapHub<DataHub>(pattern: "data-hub");
+
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
     endpoints.MapFallbackToController("Index", "Fallback"); // บอกเส้นทางมันก่อน
+
 });
 
 app.Run();

@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using Microsoft.AspNetCore.Components.Forms;
+using System.Reflection;
 using WebApi.Models;
 using WebApi.Models.DTOS.DetailProduct;
 using WebApiProjectEnd.Modes.DTOS.Accounts;
@@ -41,7 +42,7 @@ namespace WebApi.Modes.DTOS.Product
                 CategoryProductID = SetIntData("CategoryProductID", context),
                 AccountID = SetStringData("AccountID", context),
                 LevelProductID = SetIntData("LevelProductID", context),
-                FormFiles = file,
+                FormFiles = file
             }); 
         }
 

@@ -9,9 +9,19 @@ namespace WebApi.Endpoints
     {
         public static void ConfigureCartEndpoints(this WebApplication app)
         {
-            app.MapGet("/cart/{accountId}", GetCartByAccount).WithName("GetCartByAccount").Produces<APIResponse>(200);
-            app.MapPost("/cart/addItem", AddItemToCart).WithName("AddItemToCart").Accepts<AddCartRequestDTO>("application/json").Produces<APIResponse>(200).Produces(400);
-            app.MapPost("/cart/removeItem", RemoveItemToCart).WithName("RemoveItemToCart").Accepts<AddCartRequestDTO>("application/json").Produces<APIResponse>(200).Produces(400);
+            app.MapGet("/cart/{accountId}", GetCartByAccount)
+                .WithName("GetCartByAccount")
+                .Produces<APIResponse>(200);
+
+            app.MapPost("/cart/addItem", AddItemToCart)
+                .WithName("AddItemToCart")
+                .Accepts<AddCartRequestDTO>("application/json")
+                .Produces<APIResponse>(200).Produces(400);
+
+            app.MapPost("/cart/removeItem", RemoveItemToCart)
+                .WithName("RemoveItemToCart")
+                .Accepts<AddCartRequestDTO>("application/json")
+                .Produces<APIResponse>(200).Produces(400);
         }
 
         private async static Task<IResult> GetCartByAccount(ICartRepository _cartRepo , string accountId)

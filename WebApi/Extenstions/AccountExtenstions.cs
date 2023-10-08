@@ -1,10 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebApi.Models;
-using WebApi.Models.OrderAggregate;
-using WebApi.Modes;
-using WebApi.Modes.DTOS.Order;
-using WebApi.Modes.DTOS.Product;
-using WebApi.Settings;
 using WebApiProjectEnd.Modes.DTOS.Accounts;
 
 namespace WebApi.Extenstions
@@ -45,7 +40,7 @@ namespace WebApi.Extenstions
                     Id = account.Id,
                     Email = account.Email,
                     FirstName = account.FirstName,
-                    ImageUrl = CheckImageUrl(account.ImageUrl, account.LoginBy),
+                    ImageUrl = account.ImageUrl,
                     LastName = account.LastName,
                     Password = account.Password,
                     PhoneNumber = account.PhoneNumber,
@@ -64,21 +59,6 @@ namespace WebApi.Extenstions
                 }).AsNoTracking();
         }
 
-        private static string CheckImageUrl(string? ImageUrl, string? loginBy)
-        {
-            if (string.IsNullOrEmpty(loginBy))
-            {
-                if (!string.IsNullOrEmpty(ImageUrl)) return $"{ApplicationUrl.Url}/account/{ImageUrl}";
-                else return "";
-            }
-            else
-            {
-                if (!string.IsNullOrEmpty(ImageUrl)) return ImageUrl;
-                else return "";
-            }
-
-        }
-
         private static Product FromProduct(Product product)
         {
             return new Product
@@ -90,7 +70,7 @@ namespace WebApi.Extenstions
                 Color = product.Color,
                 Weight = product.Weight,
                 Description = product.Description,
-                ImageUrl = !string.IsNullOrEmpty(product.ImageUrl) ? $"{ApplicationUrl.Url}/product/{product.ImageUrl}" : "",
+                ImageUrl = !string.IsNullOrEmpty(product.ImageUrl) ? product.ImageUrl : "",
                 Created = product.Created,
                 LastUpdate = product.LastUpdate,
                 WeightUnitID = product.WeightUnitID,

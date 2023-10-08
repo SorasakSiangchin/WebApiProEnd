@@ -19,18 +19,21 @@ namespace WebApi.Repositorys
         private readonly IProductRepository _productRepo;
         private readonly ICartRepository _cartRepo;
         private readonly IConfiguration _config;
+        private readonly IAuthRepository _authRepo;
 
         public OrderRepository(
             ApplicationDbContext db,
             IProductRepository productRepo,
             ICartRepository cartRepo,
-            IConfiguration config 
+            IConfiguration config ,
+            IAuthRepository authRepo
         )
         {
             _db = db;
             _productRepo = productRepo;
             _cartRepo = cartRepo;
             _config = config;
+            _authRepo = authRepo;
         }
 
 
@@ -95,13 +98,13 @@ namespace WebApi.Repositorys
             await _db.SaveChangesAsync();
         }
 
-        public async Task<ICollection<OrderDTO>> GetByAccountIdAsync(string accountId)
+        public async Task<ICollection<OrderDTO>> GetByAccountIdAsync()
         {
             var orders = await _db.Orders
                  .Include(e => e.Address)
                  .ThenInclude(e => e.AddressInformations)
                  .ProjectOrderToOrderDTO(_db)
-                 .Where(x => x.Address.AccountID == accountId)
+                 .Where(x => x.Address.AccountID == _authRepo.GetUserId())
                  .ToListAsync();
             return orders;
         }

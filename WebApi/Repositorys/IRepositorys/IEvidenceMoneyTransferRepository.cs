@@ -9,6 +9,5 @@ namespace WebApi.Repositorys.IRepositorys
         Task<EvidenceMoneyTransfer> GetAsync(int id, bool tracked = true);
         Task<ICollection<EvidenceMoneyTransferDTO>> GetCancelAsync(string orderId, bool status = false);
         Task<(string errorMessage, string imageName)> UploadImage(IFormFileCollection formFiles);
-        Task DeleteImage(string fileName);
     }
 }

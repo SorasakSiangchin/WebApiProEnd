@@ -1,11 +1,14 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.Drawing.Imaging;
+using System.Drawing;
 using WebApi.Extenstions;
 using WebApi.Models;
 using WebApi.Models.DTOS.Review;
 using WebApi.Repositorys.IRepositorys;
 using WebApi.RequestHelpers;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace WebApi.Repositorys
 {
@@ -65,9 +68,14 @@ namespace WebApi.Repositorys
             {
                 errorMessage = _uploadFileRepo.Validation(formFiles);
                 if (string.IsNullOrEmpty(errorMessage))
-                    imageName = await UploadFileReview(formFiles.Where(e => e.ContentType != "video/mp4").ToList(), "reviewImage");
+                    imageName = await ReviewUploadFileImage(FilterTypeFile(formFiles , "video/mp4", false));
             }
             return (errorMessage, imageName);
+        }
+
+        private static List<IFormFile> FilterTypeFile(IFormFileCollection formFiles , string type , bool isCheck = true)
+        {
+            return formFiles.Where(e => isCheck ? e.ContentType == type : e.ContentType != type).ToList();
         }
 
         public async Task<(string errorVedio, string vedioName)> UploadVedio(IFormFileCollection formFiles)
@@ -76,30 +84,55 @@ namespace WebApi.Repositorys
             var vedioName = string.Empty;
             if (formFiles?.Count() > 0)
             {
-                if (formFiles[0].ContentType != "video/mp4") return (errorMessage, vedioName);
                 if (_uploadFileRepo.IsUpload(formFiles))
                 {
                     errorMessage = _uploadFileRepo.Validation(formFiles);
                     if (string.IsNullOrEmpty(errorMessage))
-                        vedioName = (await _uploadFileRepo.UploadFile(formFiles, "reviewVdo"))[0];
+                        vedioName = (await ReviewUploadFileVdo(FilterTypeFile(formFiles , "video/mp4"), "review"))[0];
                 }
                 return (errorMessage, vedioName);
             }
             return (errorMessage, vedioName);
         }
 
-        private async Task<List<string>> UploadFileReview(List<IFormFile> formFiles, string key)
+        private async Task<List<string>> ReviewUploadFileImage(List<IFormFile> formFiles)
         {
-            var listFileName = new List<string>();
-            var uploadPath = $"{_webHostEnvironment.WebRootPath}/{key}/";
-            if (!Directory.Exists(uploadPath)) Directory.CreateDirectory(uploadPath);
+            var listFileData = new List<string>();
             foreach (var formFile in formFiles)
             {
+                var image = Image.FromStream(formFile.OpenReadStream());
+                using var imageStream = new MemoryStream();
+                image.Save(imageStream, ImageFormat.Jpeg);
+                var imageBytes = imageStream.ToArray();
+                var imageData = $"data:{formFile.ContentType};base64,{Convert.ToBase64String(imageBytes)}";
+                listFileData.Add(imageData);
+            }
+            return listFileData;
+        }
+
+        private async Task<List<string>> ReviewUploadFileVdo(List<IFormFile> formFiles ,string key)
+        {
+            var listFileName = new List<string>();
+            // uploadPath จะเอามาบวกกับชื่อไฟล์
+            var uploadPath = $"{_webHostEnvironment.WebRootPath}/{key}/";
+
+            // ถ้ามันไม่มีไฟล์น้ให้สร้างขึ้นมา
+            if (!Directory.Exists(uploadPath)) Directory.CreateDirectory(uploadPath);
+
+            foreach (var formFile in formFiles)
+            {
+                // Guid.NewGuid().ToString() สุ่ม id ขึ้นมา + Path.GetExtension(formFile.FileName) เอานามสกุลมา Ex 111111111111.jpg
                 string fileName = Guid.NewGuid().ToString() + Path.GetExtension(formFile.FileName);
                 string fullName = uploadPath + fileName;
-                using (var stream = File.Create(fullName)) await formFile.CopyToAsync(stream);
+                // สร้่างในมันมีตัวตน
+                using (var stream = File.Create(fullName))
+                {
+                    // Copy เนื้อ ไฟล์มา
+                    await formFile.CopyToAsync(stream);
+                }
+                // นำชื่อไฟล์ใส่ใน List
                 listFileName.Add(fileName);
-            };
+            }
             return listFileName;
         }
 

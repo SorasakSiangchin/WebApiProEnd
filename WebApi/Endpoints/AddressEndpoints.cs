@@ -19,10 +19,10 @@ namespace WebApi.Endpoints
             app.MapPost("address/{id:int}", DeleteAddress).WithName("DeleteAddress").Produces<APIResponse>(200).Produces(400);
         }
 
-        private static async Task<IResult> GetAllAddresses(IAddressRepository _addressRepo , string accountId)
+        private static async Task<IResult> GetAllAddresses(IAddressRepository _addressRepo)
         {
             APIResponse response = new();
-            var addresses = await _addressRepo.GetAllAsync(accountId);
+            var addresses = await _addressRepo.GetAllAsync();
             response.Result = addresses;
             response.StatusCode = HttpStatusCode.OK;
             response.IsSuccess = true;
@@ -52,7 +52,7 @@ namespace WebApi.Endpoints
                 return Results.BadRequest(response);
             }
             var address = _mapper.Map<Address>(model);
-            var result = await _addressRepo.GetAllAsync(address.AccountID);
+            var result = await _addressRepo.GetAllAsync();
             if (result?.Count == 0) address.Status = true;
             await _addressRepo.CreateAsync(address);
             response.Result = address;
@@ -79,7 +79,7 @@ namespace WebApi.Endpoints
         private static async Task<IResult> UpdateStatusAddress(IMapper _mapper, IAddressRepository _addressRepo, IAccountRepository _accountRepo, UpdateAddressDTO model)
         {
             APIResponse response = new() { IsSuccess = false, StatusCode = HttpStatusCode.BadRequest };
-            var addresses = await _addressRepo.GetAllAsync(model.AccountID);
+            var addresses = await _addressRepo.GetAllAsync();
             addresses = addresses.Select(x =>
             {
                 if (x.Id != model.Id) x.Status = false;

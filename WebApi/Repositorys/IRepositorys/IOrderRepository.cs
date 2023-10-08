@@ -7,7 +7,7 @@ namespace WebApi.Repositorys.IRepositorys
 {
     public interface IOrderRepository
     {
-        Task<ICollection<OrderDTO>> GetByAccountIdAsync(string accountId);
+        Task<ICollection<OrderDTO>> GetByAccountIdAsync();
         Task<ICollection<OrderDTO>> GetAllAsync(OrderParams orderParams);
         Task<List<string>> GetAccountIdAsync(int[] cartItemId  , string cartId);
         Task<OrderDTO> GetAsync(string Id);

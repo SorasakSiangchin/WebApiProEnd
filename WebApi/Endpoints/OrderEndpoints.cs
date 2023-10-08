@@ -32,10 +32,10 @@ namespace WebApi.Endpoints
             app.MapPost("order/stripe/webhook", StripeWebhook).WithName("StripeWebhook").Produces<APIResponse>(200);
 
         }
-        private async static Task<IResult> GetOrderByAccountId(IOrderRepository _orderRepo, string accountId)
+        private async static Task<IResult> GetOrderByAccountId(IOrderRepository _orderRepo)
         {
             APIResponse response = new();
-            var orders = _orderRepo.GetByAccountIdAsync(accountId).GetAwaiter().GetResult();
+            var orders = _orderRepo.GetByAccountIdAsync().GetAwaiter().GetResult();
             response.Result = orders;
             response.IsSuccess = true;
             response.StatusCode = HttpStatusCode.OK;

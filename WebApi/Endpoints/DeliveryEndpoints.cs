@@ -3,6 +3,7 @@ using System.Net;
 using WebApi.Repositorys.IRepositorys;
 using AutoMapper;
 using WebApi.Models.DTOS.Delivery;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebApi.Endpoints
 {
@@ -14,6 +15,7 @@ namespace WebApi.Endpoints
             app.MapPost("delivery", CreateDelivery).WithName("CreateDelivery").Accepts<DeliveryRequestDTO>("multipart/form-data").Produces<APIResponse>(200); 
             app.MapPost("delivery/put", UpdateDelivery).WithName("UpdateDelivery").Accepts<DeliveryRequestDTO>("multipart/form-data").Produces<APIResponse>(200).Produces(400);
         }
+        
         private async static Task<IResult> GetDeliveryByOrderId(IDeliveryRepository _deliveryRepo, string orderId)
         {
             APIResponse response = new();
@@ -23,7 +25,7 @@ namespace WebApi.Endpoints
             response.StatusCode = HttpStatusCode.OK;
             return Results.Ok(response);
         }
-
+        [Authorize(Roles = "admin,seller")]
         private static async Task<IResult> CreateDelivery(IMapper _mapper, IDeliveryRepository _deliveryRepo, DeliveryRequestDTO model)
         {
             APIResponse response = new() { IsSuccess = false, StatusCode = HttpStatusCode.BadRequest };
@@ -35,7 +37,7 @@ namespace WebApi.Endpoints
             response.StatusCode = HttpStatusCode.Created;
             return Results.Ok(response);
         }
-
+        [Authorize(Roles = "admin,seller")]
         private static async Task<IResult> UpdateDelivery(IMapper _mapper, IDeliveryRepository _deliveryRepo, DeliveryRequestDTO model)
         {
             APIResponse response = new() { IsSuccess = false, StatusCode = HttpStatusCode.BadRequest };

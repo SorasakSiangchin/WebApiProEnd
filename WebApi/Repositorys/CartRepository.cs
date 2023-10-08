@@ -1,7 +1,4 @@
-﻿using Azure;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Net;
 using WebApi.Extenstions;
 using WebApi.Models;
@@ -14,17 +11,20 @@ namespace WebApi.Repositorys
     public class CartRepository : ICartRepository
     {
         private readonly ApplicationDbContext _db;
+        private readonly IAuthRepository _authRepo;
 
-        public CartRepository(ApplicationDbContext db)
+        public CartRepository(ApplicationDbContext db , IAuthRepository authRepo)
         {
             _db = db;
+            _authRepo = authRepo;
         }
 
         public async Task<APIResponse> AddItemToCartAsync(AddCartRequestDTO addCartDTO)
         {
             APIResponse response = new() { IsSuccess = false ,  StatusCode = HttpStatusCode.BadRequest };
 
-            var cart = await RetrieveCart(addCartDTO.accountId);
+            var cart = await RetrieveCart(_authRepo.GetUserId());
+
             if (cart == null) cart = await CreateCart(addCartDTO.accountId);
 
             var product = await _db.Products.Include(e => e.CategoryProduct).SingleOrDefaultAsync(e => e.Id == addCartDTO.productId);
@@ -56,7 +56,7 @@ namespace WebApi.Repositorys
         public async Task<APIResponse> RemoveItemToCartAsync(AddCartRequestDTO addCartDTO)
         {
             APIResponse response = new() { IsSuccess = false, StatusCode = HttpStatusCode.BadRequest };
-            var cart = await RetrieveCart(addCartDTO.accountId);
+            var cart = await RetrieveCart(_authRepo.GetUserId());
             if (cart == null)
             {
                 response.ErrorMessages.Add("ไม่ผู้ใช้งาน");

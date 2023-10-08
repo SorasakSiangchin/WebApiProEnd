@@ -35,19 +35,19 @@ namespace WebApi.Endpoints
             return Results.Ok(response);
         }
 
-        private async static Task<IResult> GetTotalIncome(IReportRepository _reportRepo, string accountId)
+        private async static Task<IResult> GetTotalIncome(IReportRepository _reportRepo)
         {
             APIResponse response = new();
-            response.Result = await _reportRepo.TotalIncome(accountId);
+            response.Result = await _reportRepo.TotalIncome();
             response.IsSuccess = true;
             response.StatusCode = HttpStatusCode.OK;
             return Results.Ok(response);
         }
 
-        private async static Task<IResult> GetTotalOrder(IReportRepository _reportRepo, string accountId)
+        private async static Task<IResult> GetTotalOrder(IReportRepository _reportRepo)
         {
             APIResponse response = new();
-            response.Result = await _reportRepo.TotalOrder(accountId);
+            response.Result = await _reportRepo.TotalOrder();
             response.IsSuccess = true;
             response.StatusCode = HttpStatusCode.OK;
             return Results.Ok(response);

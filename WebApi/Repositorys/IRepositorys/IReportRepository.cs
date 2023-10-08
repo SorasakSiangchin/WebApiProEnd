@@ -8,7 +8,7 @@ namespace WebApi.Repositorys.IRepositorys
     {  
         Task<List<ProductStatisticsDTO>> ProductStatistics(ProductStatisticsRequestDTO requestDTO);
         Task<SalesStatisticsDTO> SalesStatistics(SalesStatisticsRequestDTO requestDTO);
-        Task<double> TotalIncome(string accountId);
-        Task<double> TotalOrder(string accountId);
+        Task<double> TotalIncome();
+        Task<double> TotalOrder();
     }
 }

@@ -1,4 +1,8 @@
-﻿using WebApi.Repositorys.IRepositorys;
+﻿using Azure.Core;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Net;
+using WebApi.Repositorys.IRepositorys;
 
 namespace WebApi.Repositorys
 {
@@ -32,34 +36,22 @@ namespace WebApi.Repositorys
             return formFiles?.Count > 0;
         }
 
-        public async Task<List<string>> UploadFile(IFormFileCollection formFiles , string key)
+        // เป็นการอัฟโหลดรูปโดยเก็บ path ไว้ในฐานข้อมูล
+        public async Task<List<string>> UploadFile(IFormFileCollection formFiles)
         {
-
-            var listFileName = new List<string>();
-            // uploadPath จะเอามาบวกกับชื่อไฟล์
-            var uploadPath = $"{_webHostEnvironment.WebRootPath}/{key}/";
-
-            // ถ้ามันไม่มีไฟล์น้ให้สร้างขึ้นมา
-            if (!Directory.Exists(uploadPath)) Directory.CreateDirectory(uploadPath);
-
+            var listFileData = new List<string>();
             foreach (var formFile in formFiles)
             {
-                // Guid.NewGuid().ToString() สุ่ม id ขึ้นมา + Path.GetExtension(formFile.FileName) เอานามสกุลมา Ex 111111111111.jpg
-                string fileName = Guid.NewGuid().ToString() + Path.GetExtension(formFile.FileName);
-                string fullName = uploadPath + fileName;
-                // สร้่างในมันมีตัวตน
-                using (var stream = File.Create(fullName))
-                {
-                    // Copy เนื้อ ไฟล์มา
-                    await formFile.CopyToAsync(stream);
-                }
-                // นำชื่อไฟล์ใส่ใน List
-                listFileName.Add(fileName);
+                var image = Image.FromStream(formFile.OpenReadStream());
+                //var resized = new Bitmap(image, new Size(256, 256)); //กำหนดขนาดของรูปภาพ
+                using var imageStream = new MemoryStream();
+                image.Save(imageStream, ImageFormat.Jpeg);
+                var imageBytes = imageStream.ToArray();
+                var imageData = $"data:{formFile.ContentType};base64,{Convert.ToBase64String(imageBytes)}";
+                listFileData.Add(imageData);
             }
-            return listFileName;
+            return listFileData;
         }
-
-       
 
         public string Validation(IFormFileCollection formFiles)
         {
@@ -83,10 +75,8 @@ namespace WebApi.Repositorys
             string extension = Path.GetExtension(filename).ToLowerInvariant();
             // string.IsNullOrEmpty(extension)  เป็นค่าว่างหรือป่าว
             //!permittedExtensions.Contains(extension) เอานามสกุลไปเช็คว่ามันมีหรือป่าว
-            if (string.IsNullOrEmpty(extension) || !permittedExtensions.Contains(extension))
-            {
-                return false;
-            };
+            if (string.IsNullOrEmpty(extension) || !permittedExtensions.Contains(extension)) return false;
+            
             return true;
         }
         // configuration.GetValue<long>("FileSizeLimit") เป็นการเรียกใช้ค้าจาก appsettings.json

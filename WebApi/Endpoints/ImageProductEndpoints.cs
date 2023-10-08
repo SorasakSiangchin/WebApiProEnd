@@ -47,10 +47,8 @@ namespace WebApi.Endpoints
 
             var imageProduct = await _imageProductRepo.GetAsync(id);
             if (imageProduct != null)
-            {
-                await _imageProductRepo.RemoveAsync(imageProduct);
-                await _imageProductRepo.DeleteImage(imageProduct.ImageUrl);
-            }
+             await _imageProductRepo.RemoveAsync(imageProduct);
+            
             else
             {
                 response.ErrorMessages.Add("รหัสไม่ถูกต้อง");

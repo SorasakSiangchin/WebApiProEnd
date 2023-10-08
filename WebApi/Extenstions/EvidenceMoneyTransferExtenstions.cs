@@ -1,6 +1,5 @@
-﻿using WebApi.Models;
-using Microsoft.EntityFrameworkCore;
-using WebApi.Settings;
+﻿using Microsoft.EntityFrameworkCore;
+using WebApi.Models;
 
 namespace WebApi.Extenstions
 {
@@ -10,7 +9,7 @@ namespace WebApi.Extenstions
         {
             return query.Select(e => new EvidenceMoneyTransferDTO { 
                 Created= e.Created,
-                Evidence = !string.IsNullOrEmpty(e.Evidence) ? $"{ApplicationUrl.Url}/evidenceMoneyTransfer/{e.Evidence}" : "",
+                Evidence = !string.IsNullOrEmpty(e.Evidence) ? e.Evidence : "",
                 Id= e.Id,
                 OrderID = e.OrderID,
                 Order = db.Orders.FirstOrDefault(x => x.Id == e.OrderID)

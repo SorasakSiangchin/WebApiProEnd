@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using System.Net;
 using WebApi.Extenstions;
 using WebApi.Models;
@@ -16,17 +17,61 @@ namespace WebApiProjectEnd.Endpoints
     {
         public static void ConfigureAccountEndpoints(this WebApplication app)
         {
-            app.MapPost("/accounts", GetAllAccount).WithName("GetAccounts").Accepts<AccountParams>("application/json").Produces<APIResponse>(200).RequireAuthorization();
-            app.MapGet("/account/info", Info).WithName("Info").Produces<APIResponse>(200).Produces(401);
-            app.MapGet("/roles", GetAllRole).WithName("GetAllRoles").Produces<APIResponse>(200);
-            app.MapGet("/account/{id}", GetAccount).WithName("GetAccount").Produces<APIResponse>(200);
-            app.MapPost("/register", Register).WithName("Register").Accepts<AccountRequestDTO>("multipart/form-data").Produces<APIResponse>(200).Produces(400); ;
-            app.MapPost("/login", Login).WithName("Login").Accepts<LoginRequestDTO>("multipart/form-data").Produces<APIResponse>(200).Produces(400); ;
-            app.MapPost("/googleLogin", GoogleLogin).WithName("GoogleLogin").Accepts<GoogleLoginRequestDTO>("application/json").Produces<APIResponse>(200).Produces(400); ;
-            app.MapPost("/account/put", UpdateAccount).WithName("UpdateAccount").Accepts<AccountRequestDTO>("multipart/form-data").Produces<APIResponse>(200).Produces(400); ;
-            app.MapPost("/account/password/put", UpdateAccountPassword).WithName("UpdateAccountPassword").Accepts<AccountRequestDTO>("multipart/form-data").Produces<APIResponse>(200).Produces(400); ;
+            app.MapPost("/accounts", GetAllAccount)
+                .WithName("GetAccounts")
+                .Accepts<AccountParams>("application/json")
+                .Produces<APIResponse>(200);
+
+            app.MapGet("/account/info", Info)
+                .WithName("Info")
+                .Produces<APIResponse>(200)
+                .Produces(401);
+
+            app.MapGet("/account/id", GetAccountByToken)
+                .WithName("GetAccountByToken")
+                .Produces<APIResponse>(200)
+                .Produces(401);
+
+            app.MapGet("/roles", GetAllRole)
+                .WithName("GetAllRoles")
+                .Produces<APIResponse>(200);
+
+            app.MapGet("/account/{id}", GetAccount)
+                .WithName("GetAccount")
+                .Produces<APIResponse>(200);
+
+            app.MapPost("/register", Register)
+                .WithName("Register")
+                .Accepts<AccountRequestDTO>("multipart/form-data")
+                .Produces<APIResponse>(200)
+                .Produces(400);
+
+            app.MapPost("/login", Login)
+                .WithName("Login")
+                .Accepts<LoginRequestDTO>("multipart/form-data")
+                .Produces<APIResponse>(200)
+                .Produces(400);
+
+            app.MapPost("/googleLogin", GoogleLogin)
+                .WithName("GoogleLogin")
+                .Accepts<GoogleLoginRequestDTO>("application/json")
+                .Produces<APIResponse>(200)
+                .Produces(400);
+
+            app.MapPost("/account/put", UpdateAccount)
+                .WithName("UpdateAccount")
+                .Accepts<AccountRequestDTO>("multipart/form-data")
+                .Produces<APIResponse>(200)
+                .Produces(400);
+
+            app.MapPost("/account/password/put", UpdateAccountPassword)
+                .WithName("UpdateAccountPassword")
+                .Accepts<AccountRequestDTO>("multipart/form-data")
+                .Produces<APIResponse>(200)
+                .Produces(400);
         }
 
+        [Authorize(Roles = "admin")]
         private async static Task<IResult> GetAllAccount(HttpResponse httpResponse, IAccountRepository _accountRepo, AccountParams accountParams)
         {
             APIResponse response = new();
@@ -39,6 +84,7 @@ namespace WebApiProjectEnd.Endpoints
             response.StatusCode = HttpStatusCode.OK;
             return Results.Ok(response);
         }
+
         private async static Task<IResult> GetAllRole(IRoleRepository _roleRepo)
         {
             APIResponse response = new();
@@ -47,6 +93,7 @@ namespace WebApiProjectEnd.Endpoints
             response.StatusCode = HttpStatusCode.OK;
             return Results.Ok(response);
         }
+
         private async static Task<IResult> GetAccount(IAccountRepository _accountRepo, string id)
         {
             APIResponse response = new();
@@ -57,6 +104,16 @@ namespace WebApiProjectEnd.Endpoints
             response.Result = AccountResponse.FromAccount(data);
             return Results.Ok(response);
         }
+
+        private async static Task<IResult> GetAccountByToken (IAuthRepository _authRepo)
+        {
+            APIResponse response = new();
+            response.IsSuccess = true;
+            response.StatusCode = HttpStatusCode.OK;
+            response.Result = _authRepo.GetUserId();
+            return Results.Ok(response);
+        }
+
         private async static Task<IResult> Register(IMapper _mapper, IAccountRepository _accountRepo, AccountRequestDTO model)
         {
             APIResponse response = new() { IsSuccess = false, StatusCode = HttpStatusCode.BadRequest };
@@ -84,6 +141,7 @@ namespace WebApiProjectEnd.Endpoints
             response.StatusCode = HttpStatusCode.OK;
             return Results.Ok(response);
         }
+
         private async static Task<IResult> Login(IAccountRepository _accountRepo, LoginRequestDTO model)
         {
             APIResponse response = new() { IsSuccess = false, StatusCode = HttpStatusCode.BadRequest };
@@ -105,6 +163,7 @@ namespace WebApiProjectEnd.Endpoints
             response.StatusCode = HttpStatusCode.OK;
             return Results.Ok(response);
         }
+
         private async static Task<IResult> GoogleLogin(IMapper _mapper, IAccountRepository _accountRepo, GoogleLoginRequestDTO model)
         {
             APIResponse response = new() { IsSuccess = false, StatusCode = HttpStatusCode.BadRequest };
@@ -137,6 +196,7 @@ namespace WebApiProjectEnd.Endpoints
             response.StatusCode = HttpStatusCode.OK;
             return Results.Ok(response);
         }
+
         private async static Task<IResult> Info(IAccountRepository _accountRepo, HttpContext httpContext)
         {
             APIResponse response = new();
@@ -152,12 +212,14 @@ namespace WebApiProjectEnd.Endpoints
             response.StatusCode = HttpStatusCode.OK;
             return Results.Ok(response);
         }
+
         private static async Task<IResult> UpdateAccount(IMapper _mapper, IAccountRepository _accountRepo, AccountRequestDTO model)
         {
             APIResponse response = new() { IsSuccess = false, StatusCode = HttpStatusCode.BadRequest };
             var account = await _accountRepo.GetAsync(model.Id);
             if (account == null) return Results.NotFound();
             _mapper.Map(model, account); // แทนค่า
+
             #region จัดการรูปภาพ
             (string erorrMesage, string imageName) = await _accountRepo.UploadImage(model.FormFiles);
             if (!string.IsNullOrEmpty(erorrMesage))
@@ -166,10 +228,7 @@ namespace WebApiProjectEnd.Endpoints
                 return Results.BadRequest(response);
             }
             if (!string.IsNullOrEmpty(imageName))
-            {
-                await _accountRepo.DeleteImage(account.ImageUrl);
                 account.ImageUrl = imageName;
-            }
             #endregion
 
             await _accountRepo.UpdateAsync(account);
@@ -179,6 +238,7 @@ namespace WebApiProjectEnd.Endpoints
             response.Result = AccountResponse.FromAccount(result);
             return Results.Ok(response);
         }
+
         private static async Task<IResult> UpdateAccountPassword(IMapper _mapper, IAccountRepository _accountRepo, AccountRequestDTO model)
         {
             APIResponse response = new() { IsSuccess = false, StatusCode = HttpStatusCode.BadRequest };
@@ -191,5 +251,6 @@ namespace WebApiProjectEnd.Endpoints
             response.StatusCode = HttpStatusCode.OK;
             return Results.Ok(response);
         }
+
     }
 }
